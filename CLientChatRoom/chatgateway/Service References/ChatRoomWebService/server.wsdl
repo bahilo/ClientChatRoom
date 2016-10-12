@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://localhost/chatroom/server.php?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://localhost/chatroom/server.php?wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://localhost/chatroom/server.php?wsdl">
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+      <xsd:complexType name="UserChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="FirstName" type="xsd:string" />
+          <xsd:element name="LastName" type="xsd:string" />
+          <xsd:element name="Email" type="xsd:string" />
+          <xsd:element name="Username" type="xsd:string" />
+          <xsd:element name="Password" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AllUserChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:UserChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="UserFilterChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="FirstName" type="xsd:string" />
+          <xsd:element name="LastName" type="xsd:string" />
+          <xsd:element name="Email" type="xsd:string" />
+          <xsd:element name="Username" type="xsd:string" />
+          <xsd:element name="Password" type="xsd:string" />
+          <xsd:element name="Operator" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="MessageChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="Date" type="xsd:string" />
+          <xsd:element name="Content" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AllMessageChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:MessageChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="MessageFilterChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="Date" type="xsd:string" />
+          <xsd:element name="Content" type="xsd:string" />
+          <xsd:element name="Operator" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="DiscussionChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="Date" type="xsd:string" />
+          <xsd:element name="MessageId" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AllDiscussionChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:DiscussionChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DiscussionFilterChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="Date" type="xsd:string" />
+          <xsd:element name="MessageId" type="xsd:int" />
+          <xsd:element name="Operator" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="User_discussionChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="UserId" type="xsd:int" />
+          <xsd:element name="DiscussionId" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AllUser_discussionChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:User_discussionChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="User_discussionFilterChatRoom">
+        <xsd:all>
+          <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="UserId" type="xsd:int" />
+          <xsd:element name="DiscussionId" type="xsd:int" />
+          <xsd:element name="Operator" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AllUser_discussionQuoteChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:CommandsChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="AllUser_discussionCommandChatRoom">
+        <xsd:complexContent mixed="false">
+          <xsd:restriction base="SOAP-ENC:Array">
+            <xsd:attribute wsdl:arrayType="tns:CommandsChatRoom[]" minOccurs="0" maxOccur="unbounded" ref="SOAP-ENC:arrayType" />
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="get_authenticate_userRequest">
+    <wsdl:part name="username" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_authenticate_userResponse">
+    <wsdl:part name="return" type="tns:UserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_userRequest">
+    <wsdl:part name="nbLine" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_userResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_userRequest">
+    <wsdl:part name="user_array_list" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_userResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_userRequest">
+    <wsdl:part name="user_array_list" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_userResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_userRequest">
+    <wsdl:part name="user_array_list" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_userResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_by_idRequest">
+    <wsdl:part name="id" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_by_idResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_userRequest">
+    <wsdl:part name="user_array_list_filter" type="tns:UserFilterChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_userResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_by_user_discussion_listRequest">
+    <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_by_user_discussion_listResponse">
+    <wsdl:part name="return" type="tns:AllUserChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_messageRequest">
+    <wsdl:part name="nbLine" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_messageResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_messageRequest">
+    <wsdl:part name="message_array_list" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_messageResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_messageRequest">
+    <wsdl:part name="message_array_list" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_messageResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_messageRequest">
+    <wsdl:part name="message_array_list" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_messageResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_message_by_idRequest">
+    <wsdl:part name="id" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_message_by_idResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_messageRequest">
+    <wsdl:part name="message_array_list_filter" type="tns:MessageFilterChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_messageResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_message_by_discussion_listRequest">
+    <wsdl:part name="discussion_array_list" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_message_by_discussion_listResponse">
+    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussionRequest">
+    <wsdl:part name="nbLine" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussionResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_discussionRequest">
+    <wsdl:part name="discussion_array_list" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_discussionResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_discussionRequest">
+    <wsdl:part name="discussion_array_list" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_discussionResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_discussionRequest">
+    <wsdl:part name="discussion_array_list" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_discussionResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_idRequest">
+    <wsdl:part name="id" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_idResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_discussionRequest">
+    <wsdl:part name="discussion_array_list_filter" type="tns:DiscussionFilterChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_discussionResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_user_discussion_listRequest">
+    <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_user_discussion_listResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_discussionRequest">
+    <wsdl:part name="nbLine" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_discussionResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_user_discussionRequest">
+    <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="delete_data_user_discussionResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_user_discussionRequest">
+    <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="insert_data_user_discussionResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_user_discussionRequest">
+    <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="update_data_user_discussionResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_discussion_by_idRequest">
+    <wsdl:part name="id" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="get_data_user_discussion_by_idResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_user_discussionRequest">
+    <wsdl:part name="user_discussion_array_list_filter" type="tns:User_discussionFilterChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_filter_user_discussionResponse">
+    <wsdl:part name="return" type="tns:AllUser_discussionChatRoom" />
+  </wsdl:message>
+  <wsdl:portType name="ChatRoomWebServicePortType">
+    <wsdl:operation name="get_authenticate_user">
+      <documentation>Security handling</documentation>
+      <wsdl:input message="tns:get_authenticate_userRequest" />
+      <wsdl:output message="tns:get_authenticate_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user">
+      <documentation>Get all user data</documentation>
+      <wsdl:input message="tns:get_data_userRequest" />
+      <wsdl:output message="tns:get_data_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_user">
+      <documentation>Delete users</documentation>
+      <wsdl:input message="tns:delete_data_userRequest" />
+      <wsdl:output message="tns:delete_data_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_user">
+      <documentation>Insert users</documentation>
+      <wsdl:input message="tns:insert_data_userRequest" />
+      <wsdl:output message="tns:insert_data_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="update_data_user">
+      <documentation>Update users</documentation>
+      <wsdl:input message="tns:update_data_userRequest" />
+      <wsdl:output message="tns:update_data_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_by_id">
+      <documentation>get an user by its id</documentation>
+      <wsdl:input message="tns:get_data_user_by_idRequest" />
+      <wsdl:output message="tns:get_data_user_by_idResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_user">
+      <documentation>get result of user filtering</documentation>
+      <wsdl:input message="tns:get_filter_userRequest" />
+      <wsdl:output message="tns:get_filter_userResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_by_user_discussion_list">
+      <documentation>get all user by a user_discussion list</documentation>
+      <wsdl:input message="tns:get_data_user_by_user_discussion_listRequest" />
+      <wsdl:output message="tns:get_data_user_by_user_discussion_listResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message">
+      <documentation>Get all message data</documentation>
+      <wsdl:input message="tns:get_data_messageRequest" />
+      <wsdl:output message="tns:get_data_messageResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_message">
+      <documentation>Delete messages</documentation>
+      <wsdl:input message="tns:delete_data_messageRequest" />
+      <wsdl:output message="tns:delete_data_messageResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_message">
+      <documentation>Insert messages</documentation>
+      <wsdl:input message="tns:insert_data_messageRequest" />
+      <wsdl:output message="tns:insert_data_messageResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="update_data_message">
+      <documentation>Update messages</documentation>
+      <wsdl:input message="tns:update_data_messageRequest" />
+      <wsdl:output message="tns:update_data_messageResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message_by_id">
+      <documentation>get an message by its id</documentation>
+      <wsdl:input message="tns:get_data_message_by_idRequest" />
+      <wsdl:output message="tns:get_data_message_by_idResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_message">
+      <documentation>get result of message filtering</documentation>
+      <wsdl:input message="tns:get_filter_messageRequest" />
+      <wsdl:output message="tns:get_filter_messageResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message_by_discussion_list">
+      <documentation>get all message by a discussion list</documentation>
+      <wsdl:input message="tns:get_data_message_by_discussion_listRequest" />
+      <wsdl:output message="tns:get_data_message_by_discussion_listResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion">
+      <documentation>Get all discussion data</documentation>
+      <wsdl:input message="tns:get_data_discussionRequest" />
+      <wsdl:output message="tns:get_data_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_discussion">
+      <documentation>Delete discussions</documentation>
+      <wsdl:input message="tns:delete_data_discussionRequest" />
+      <wsdl:output message="tns:delete_data_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_discussion">
+      <documentation>Insert discussions</documentation>
+      <wsdl:input message="tns:insert_data_discussionRequest" />
+      <wsdl:output message="tns:insert_data_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="update_data_discussion">
+      <documentation>Update discussions</documentation>
+      <wsdl:input message="tns:update_data_discussionRequest" />
+      <wsdl:output message="tns:update_data_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_id">
+      <documentation>get an discussion by its id</documentation>
+      <wsdl:input message="tns:get_data_discussion_by_idRequest" />
+      <wsdl:output message="tns:get_data_discussion_by_idResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_discussion">
+      <documentation>get result of discussion filtering</documentation>
+      <wsdl:input message="tns:get_filter_discussionRequest" />
+      <wsdl:output message="tns:get_filter_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_user_discussion_list">
+      <documentation>get all discussion by a user_discussion list</documentation>
+      <wsdl:input message="tns:get_data_discussion_by_user_discussion_listRequest" />
+      <wsdl:output message="tns:get_data_discussion_by_user_discussion_listResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_discussion">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:get_data_user_discussionRequest" />
+      <wsdl:output message="tns:get_data_user_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_user_discussion">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:delete_data_user_discussionRequest" />
+      <wsdl:output message="tns:delete_data_user_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_user_discussion">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:insert_data_user_discussionRequest" />
+      <wsdl:output message="tns:insert_data_user_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="update_data_user_discussion">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:update_data_user_discussionRequest" />
+      <wsdl:output message="tns:update_data_user_discussionResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_discussion_by_id">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:get_data_user_discussion_by_idRequest" />
+      <wsdl:output message="tns:get_data_user_discussion_by_idResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_user_discussion">
+      <documentation>Simple Class methode testing</documentation>
+      <wsdl:input message="tns:get_filter_user_discussionRequest" />
+      <wsdl:output message="tns:get_filter_user_discussionResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ChatRoomWebServiceBinding" type="tns:ChatRoomWebServicePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <wsdl:operation name="get_authenticate_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_authenticate_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/delete_data_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/insert_data_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="update_data_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/update_data_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_by_id">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_user_by_id" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_user">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_filter_user" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_by_user_discussion_list">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_user_by_user_discussion_list" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_message" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_message">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/delete_data_message" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_message">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/insert_data_message" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="update_data_message">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/update_data_message" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message_by_id">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_message_by_id" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_message">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_filter_message" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_message_by_discussion_list">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_message_by_discussion_list" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/delete_data_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/insert_data_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="update_data_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/update_data_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_id">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion_by_id" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_filter_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_user_discussion_list">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion_by_user_discussion_list" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_user_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="delete_data_user_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/delete_data_user_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insert_data_user_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/insert_data_user_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="update_data_user_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/update_data_user_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_user_discussion_by_id">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_user_discussion_by_id" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_filter_user_discussion">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_filter_user_discussion" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ChatRoomWebService">
+    <wsdl:port name="ChatRoomWebServicePort" binding="tns:ChatRoomWebServiceBinding">
+      <soap:address location="http://localhost/chatroom/server.php" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

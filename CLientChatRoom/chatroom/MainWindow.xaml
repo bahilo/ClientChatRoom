@@ -1,0 +1,71 @@
+﻿<Window x:Class="chatroom.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:chatroom"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel MinWidth="100">
+                    <ListBox x:Name="DemoItemsListBox" Margin="0 16 0 16" SelectedIndex="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button 
+                                    Command="{Binding}"
+                                    CommandParameter="{Binding TxtID}">
+                                    <TextBlock Text="{Binding Username}"/>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </materialDesign:DrawerHost.LeftDrawerContent>
+            <DockPanel>
+                <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryDark" DockPanel.Dock="Top" Height="55">
+                    <DockPanel>
+                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
+                                      x:Name="MenuToggleButton"/>
+                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
+                            <StackPanel>
+                                <Button Content="Log Out."/>
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Welcome into message conveyor</TextBlock>
+                    </DockPanel>
+                </materialDesign:ColorZone>
+                <StackPanel Orientation="Vertical">
+
+                    <!--<TextBlock>Enter your chat name</TextBlock>
+                <TextBox Name="textBox3" Grid.Column="1" />
+                <Button x:Name="btn_server_connect" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btn_server_connect_Click" >Connect to server</Button>-->
+                    <!--<TextBox Text="{Binding DiscussionViewModel.OutputMessage, UpdateSourceTrigger=PropertyChanged}" Margin="6" Name="textBox1" TextWrapping="Wrap" MinLines="10" AcceptsReturn="True" IsEnabled="False"/>-->
+                    <RichTextBox>
+                        <FlowDocument>
+                            <Paragraph>
+                                <TextBlock>hgfhgfhgfhf</TextBlock>
+                            </Paragraph>
+                            <Paragraph Block.TextAlignment="Right">
+                                <Grid>
+                                    <Border BorderBrush="red" BorderThickness="2"></Border>
+                                    <TextBlock>Here is my text</TextBlock>
+                                </Grid>
+                                
+
+
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Text="{Binding DiscussionViewModel.InputMessage, UpdateSourceTrigger=PropertyChanged}" Margin="6" Name="textBox2" TextWrapping="Wrap" AcceptsReturn="True" MinWidth="430"/>
+                        <Button Name="btn_send"
+                                Command="{Binding DiscussionViewModel.SendMessageCommand}">Send</Button>
+                    </StackPanel>
+                </StackPanel>
+            </DockPanel>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
+</Window>
