@@ -1,5 +1,6 @@
 ﻿using chatcommon.Classes;
 using chatcommon.Entities;
+using chatcommon.Enums;
 using chatcommon.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -103,7 +104,7 @@ namespace chatbusiness.Core
             return result;
         }
 
-        public async Task<List<User>> searchUser(User user, string filterOperator)
+        public async Task<List<User>> searchUser(User user, EOperator filterOperator)
         {
             List<User> result = new List<User>();
             try

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using chatgateway.ChatRoomWebService;
 using System.ComponentModel;
 using chatgateway.Helper;
+using chatcommon.Enums;
 
 namespace chatgateway.Core
 {
@@ -133,6 +134,30 @@ namespace chatgateway.Core
             return result;
         }
 
+        public async Task<List<Discussion>> GetDiscussionDataByMessageList(List<Message> messageList)
+        {
+            List<Discussion> result = new List<Discussion>();
+            try
+            {
+                result = (await _channel.get_data_discussion_by_message_listAsync(messageList.MessageTypeToArray())).ArrayTypeToDiscussion();
+            }
+            catch (FaultException)
+            {
+                Dispose();
+                throw;
+            }
+            catch (CommunicationException)
+            {
+                _channel.Abort();
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                _channel.Abort();
+            }
+            return result;
+        }
+
         public async Task<List<Discussion>> GetDiscussionDataByUser_discussionList(List<User_discussion> user_discussionList)
         {
             List<Discussion> result = new List<Discussion>();
@@ -208,9 +233,9 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<Discussion>> searchDiscussion(Discussion discussion, string filterOperator)
+        public async Task<List<Discussion>> searchDiscussion(Discussion discussion, EOperator filterOperator)
         {
-            var formatListDiscussionToArray = discussion.DiscussionTypeToFilterArray(filterOperator);
+            var formatListDiscussionToArray = discussion.DiscussionTypeToFilterArray(filterOperator.ToString());
             List<Discussion> result = new List<Discussion>();
             try
             {
@@ -233,7 +258,7 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<Discussion>> searchDiscussionFromWebService(Discussion item, string filterOperator)
+        public async Task<List<Discussion>> searchDiscussionFromWebService(Discussion item, EOperator filterOperator)
         {
             return await searchDiscussion(item, filterOperator);
         }

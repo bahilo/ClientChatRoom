@@ -14,11 +14,11 @@ namespace chatcommon.Classes
         static string fileName;
         static string fileFullPath;
         static object _lock = new object();
-                
+
         public static void initialize()
         {
-            fileName = "log_"+DateTime.Now.ToString("yyyy_MM")+".txt";
-            directory = Directory.GetCurrentDirectory()+@"\Logs";
+            fileName = "log_" + DateTime.Now.ToString("yyyy_MM") + ".txt";
+            directory = Directory.GetCurrentDirectory() + @"\Logs";
             fileFullPath = string.Format(@"{0}\{1}", directory, fileName);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
@@ -31,7 +31,7 @@ namespace chatcommon.Classes
         {
             initialize();
             lock (_lock)
-                   if (string.IsNullOrEmpty(localCallerName))
+                if (string.IsNullOrEmpty(localCallerName))
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "ERR", callerName, message) });
                 else
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "ERR", localCallerName, message) });
@@ -41,7 +41,7 @@ namespace chatcommon.Classes
         {
             initialize();
             lock (_lock)
-                   if (string.IsNullOrEmpty(localCallerName))
+                if (string.IsNullOrEmpty(localCallerName))
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "WAR", callerName, message) });
                 else
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "WAR", localCallerName, message) });
@@ -51,7 +51,7 @@ namespace chatcommon.Classes
         {
             initialize();
             lock (_lock)
-                if(string.IsNullOrEmpty(localCallerName))
+                if (string.IsNullOrEmpty(localCallerName))
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "TES", callerName, message) });
                 else
                     File.AppendAllLines(fileFullPath, new List<string> { string.Format(@"[{0}]-[{1}] - [{2}] {3}", DateTime.Now.ToString("dd/MM/yy HH:mm:ss"), "TES", localCallerName, message) });

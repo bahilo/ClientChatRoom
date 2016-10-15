@@ -3,6 +3,7 @@ using chatbusiness.Core;
 using chatcommon.Classes;
 using chatcommon.Entities;
 using chatgateway;
+using chatgateway.Classes;
 using chatgateway.Core;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace chatroom.Classes
             initialize();
         }
 
-        public void initialize()
+        public async void initialize()
         {
             Dal = new DataAccess(
                                 new DiscussionGateway(),
@@ -32,7 +33,7 @@ namespace chatroom.Classes
                                 new SecurityGateway());
 
             BLSecurity BLSecurity = new BLSecurity(Dal);
-            //Dal.SetUserCredential(new NotifyTaskCompletion<User>(BLSecurity.AuthenticateUser("Test225", "Test", false)).Task.Result);
+            Dal.SetUserCredential(await BLSecurity.AuthenticateUser(WebCommunication.ChannelUserName, WebCommunication.ChannelPassword, false));
             Bl = new BusinessLogic(
                                 new BLDiscussion(Dal),
                                 new BLUser(Dal),

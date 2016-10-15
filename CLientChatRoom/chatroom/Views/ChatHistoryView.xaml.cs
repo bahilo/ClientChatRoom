@@ -1,5 +1,4 @@
-﻿using chatroom.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,19 +16,13 @@ using System.Windows.Shapes;
 namespace chatroom.Views
 {
     /// <summary>
-    /// Interaction logic for SecurityLoginView.xaml
+    /// Interaction logic for ChatHistoryView.xaml
     /// </summary>
-    public partial class SecurityLoginView : UserControl
+    public partial class ChatHistoryView : UserControl
     {
-        public SecurityLoginView()
+        public ChatHistoryView()
         {
             InitializeComponent();
-        }
-
-        private void SecurityLoginWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            pwdBox.Clear();
-            pwdBox.LostFocus += ((MainWindowViewModel)this.DataContext).SecurityLoginViewModel.onPwdBoxPasswordChange_updateTxtClearPassword;
         }
     }
 }

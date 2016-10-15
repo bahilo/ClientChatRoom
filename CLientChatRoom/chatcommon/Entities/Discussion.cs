@@ -13,7 +13,5 @@ namespace chatcommon.Entities
 
         public DateTime Date { get; set; }
 
-        public int MessageId { get; set; }
-
     }
 }

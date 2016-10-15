@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using chatcommon.Entities;
 using chatcommon.Classes;
+using chatcommon.Enums;
 
 namespace chatbusiness.Core
 {
@@ -102,8 +103,22 @@ namespace chatbusiness.Core
             }
             return result;
         }
-        
-        public async Task<List<Discussion>> searchDiscussion(Discussion discussion, string filterOperator)
+
+        public async Task<List<Discussion>> GetDiscussionDataByMessageList(List<Message> messageList)
+        {
+            List<Discussion> result = new List<Discussion>();
+            try
+            {
+                result = await DAC.DiscussionGateway.GetDiscussionDataByMessageList(messageList);
+            }
+            catch (Exception ex)
+            {
+                Log.error(ex.Message);
+            }
+            return result;
+        }
+
+        public async Task<List<Discussion>> searchDiscussion(Discussion discussion, EOperator filterOperator)
         {
             List<Discussion> result = new List<Discussion>();
             try

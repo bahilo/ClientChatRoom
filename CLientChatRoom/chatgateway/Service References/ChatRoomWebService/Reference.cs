@@ -183,18 +183,6 @@ namespace chatgateway.ChatRoomWebService {
         [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
         System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.MessageChatRoom[]> get_filter_messageAsync(chatgateway.ChatRoomWebService.MessageFilterChatRoom message_array_list_filter);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_message_by_discussion_list", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(DiscussionChatRoom))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(MessageChatRoom))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(User_discussionChatRoom))]
-        [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
-        chatgateway.ChatRoomWebService.MessageChatRoom[] get_data_message_by_discussion_list(chatgateway.ChatRoomWebService.DiscussionChatRoom[] discussion_array_list);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_message_by_discussion_list", ReplyAction="*")]
-        [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
-        System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.MessageChatRoom[]> get_data_message_by_discussion_listAsync(chatgateway.ChatRoomWebService.DiscussionChatRoom[] discussion_array_list);
-        
         [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_discussion", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(DiscussionChatRoom))]
@@ -278,6 +266,18 @@ namespace chatgateway.ChatRoomWebService {
         [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_discussion_by_user_discussion_list", ReplyAction="*")]
         [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
         System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.DiscussionChatRoom[]> get_data_discussion_by_user_discussion_listAsync(chatgateway.ChatRoomWebService.User_discussionChatRoom[] user_discussion_array_list);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_discussion_by_message_list", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(DiscussionChatRoom))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(MessageChatRoom))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(User_discussionChatRoom))]
+        [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
+        chatgateway.ChatRoomWebService.DiscussionChatRoom[] get_data_discussion_by_message_list(chatgateway.ChatRoomWebService.MessageChatRoom[] message_array_list);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_discussion_by_message_list", ReplyAction="*")]
+        [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
+        System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.DiscussionChatRoom[]> get_data_discussion_by_message_listAsync(chatgateway.ChatRoomWebService.MessageChatRoom[] message_array_list);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://localhost/chatroom/server.php/get_data_user_discussion", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
@@ -530,8 +530,6 @@ namespace chatgateway.ChatRoomWebService {
         
         private string dateField;
         
-        private int messageIdField;
-        
         private string operatorField;
         
         /// <remarks/>
@@ -553,17 +551,6 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.dateField = value;
                 this.RaisePropertyChanged("Date");
-            }
-        }
-        
-        /// <remarks/>
-        public int MessageId {
-            get {
-                return this.messageIdField;
-            }
-            set {
-                this.messageIdField = value;
-                this.RaisePropertyChanged("MessageId");
             }
         }
         
@@ -600,8 +587,6 @@ namespace chatgateway.ChatRoomWebService {
         
         private string dateField;
         
-        private int messageIdField;
-        
         /// <remarks/>
         public int ID {
             get {
@@ -621,17 +606,6 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.dateField = value;
                 this.RaisePropertyChanged("Date");
-            }
-        }
-        
-        /// <remarks/>
-        public int MessageId {
-            get {
-                return this.messageIdField;
-            }
-            set {
-                this.messageIdField = value;
-                this.RaisePropertyChanged("MessageId");
             }
         }
         
@@ -655,6 +629,10 @@ namespace chatgateway.ChatRoomWebService {
         
         private int idField;
         
+        private int discussionIdField;
+        
+        private int userIdField;
+        
         private string dateField;
         
         private string contentField;
@@ -669,6 +647,28 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.idField = value;
                 this.RaisePropertyChanged("ID");
+            }
+        }
+        
+        /// <remarks/>
+        public int DiscussionId {
+            get {
+                return this.discussionIdField;
+            }
+            set {
+                this.discussionIdField = value;
+                this.RaisePropertyChanged("DiscussionId");
+            }
+        }
+        
+        /// <remarks/>
+        public int UserId {
+            get {
+                return this.userIdField;
+            }
+            set {
+                this.userIdField = value;
+                this.RaisePropertyChanged("UserId");
             }
         }
         
@@ -725,6 +725,10 @@ namespace chatgateway.ChatRoomWebService {
         
         private int idField;
         
+        private int discussionIdField;
+        
+        private int userIdField;
+        
         private string dateField;
         
         private string contentField;
@@ -737,6 +741,28 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.idField = value;
                 this.RaisePropertyChanged("ID");
+            }
+        }
+        
+        /// <remarks/>
+        public int DiscussionId {
+            get {
+                return this.discussionIdField;
+            }
+            set {
+                this.discussionIdField = value;
+                this.RaisePropertyChanged("DiscussionId");
+            }
+        }
+        
+        /// <remarks/>
+        public int UserId {
+            get {
+                return this.userIdField;
+            }
+            set {
+                this.userIdField = value;
+                this.RaisePropertyChanged("UserId");
             }
         }
         
@@ -1077,14 +1103,6 @@ namespace chatgateway.ChatRoomWebService {
             return base.Channel.get_filter_messageAsync(message_array_list_filter);
         }
         
-        public chatgateway.ChatRoomWebService.MessageChatRoom[] get_data_message_by_discussion_list(chatgateway.ChatRoomWebService.DiscussionChatRoom[] discussion_array_list) {
-            return base.Channel.get_data_message_by_discussion_list(discussion_array_list);
-        }
-        
-        public System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.MessageChatRoom[]> get_data_message_by_discussion_listAsync(chatgateway.ChatRoomWebService.DiscussionChatRoom[] discussion_array_list) {
-            return base.Channel.get_data_message_by_discussion_listAsync(discussion_array_list);
-        }
-        
         public chatgateway.ChatRoomWebService.DiscussionChatRoom[] get_data_discussion(string nbLine) {
             return base.Channel.get_data_discussion(nbLine);
         }
@@ -1139,6 +1157,14 @@ namespace chatgateway.ChatRoomWebService {
         
         public System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.DiscussionChatRoom[]> get_data_discussion_by_user_discussion_listAsync(chatgateway.ChatRoomWebService.User_discussionChatRoom[] user_discussion_array_list) {
             return base.Channel.get_data_discussion_by_user_discussion_listAsync(user_discussion_array_list);
+        }
+        
+        public chatgateway.ChatRoomWebService.DiscussionChatRoom[] get_data_discussion_by_message_list(chatgateway.ChatRoomWebService.MessageChatRoom[] message_array_list) {
+            return base.Channel.get_data_discussion_by_message_list(message_array_list);
+        }
+        
+        public System.Threading.Tasks.Task<chatgateway.ChatRoomWebService.DiscussionChatRoom[]> get_data_discussion_by_message_listAsync(chatgateway.ChatRoomWebService.MessageChatRoom[] message_array_list) {
+            return base.Channel.get_data_discussion_by_message_listAsync(message_array_list);
         }
         
         public chatgateway.ChatRoomWebService.User_discussionChatRoom[] get_data_user_discussion(string nbLine) {

@@ -10,5 +10,8 @@ namespace chatroom.Intefaces
     {
         Task onUIThreadAsync(System.Action action);
         void onUIThreadSync(System.Action action);
+        void showRecipientReply(string message);
+        void showMyReply(string message);
+        void showInfo(string message);
     }
 }

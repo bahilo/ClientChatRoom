@@ -1,4 +1,5 @@
 ﻿using chatcommon.Entities;
+using chatcommon.Enums;
 using chatcommon.Interfaces;
 using chatgateway.ChatRoomWebService;
 using chatgateway.Helper;
@@ -34,6 +35,7 @@ namespace chatgateway.Core
         {
             set
             {
+                AuthenticatedUser = value;
                 setServiceCredential(value.Username, value.Password);
                 onPropertyChange("Credential");
             }
@@ -210,9 +212,9 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<User>> searchUser(User user, string filterOperator)
+        public async Task<List<User>> searchUser(User user, EOperator filterOperator)
         {
-            var formatListUserToArray = user.UserTypeToFilterArray(filterOperator);
+            var formatListUserToArray = user.UserTypeToFilterArray(filterOperator.ToString());
             List<User> result = new List<User>();
             try
             {
@@ -235,7 +237,7 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<User>> searchUserFromWebService(User item, string filterOperator)
+        public async Task<List<User>> searchUserFromWebService(User item, EOperator filterOperator)
         {
             return await searchUser(item, filterOperator);
         }

@@ -1,5 +1,6 @@
 ﻿using chatcommon.Classes;
 using chatcommon.Entities;
+using chatcommon.Enums;
 using chatcommon.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -103,26 +104,12 @@ namespace chatbusiness.Core
             return result;
         }
 
-        public async Task<List<Message>> searchMessage(Message message, string filterOperator)
+        public async Task<List<Message>> searchMessage(Message message, EOperator filterOperator)
         {
             List<Message> result = new List<Message>();
             try
             {
                 result = await DAC.MessageGateway.searchMessage(message, filterOperator);
-            }
-            catch (Exception ex)
-            {
-                Log.error(ex.Message);
-            }
-            return result;
-        }
-
-        public async Task<List<Message>> GetMessageDataByDiscussionList(List<Discussion> discussionList)
-        {
-            List<Message> result = new List<Message>();
-            try
-            {
-                result = await DAC.MessageGateway.GetMessageDataByDiscussionList(discussionList);
             }
             catch (Exception ex)
             {

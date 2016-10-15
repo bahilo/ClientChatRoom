@@ -18,40 +18,46 @@ namespace chatroom.Models
             _user = new User();
         }
 
+        public User User
+        {
+            get { return _user; }
+            set { setPropertyChange(ref _user, value); }
+        }
+
         public string TxtID
         {
             get { return _user.ID.ToString(); }
-            set { _user.ID = Convert.ToInt32(value); onPopertyChange("TxtID"); }
+            set { _user.ID = Convert.ToInt32(value); onPropertyChange("TxtID"); }
         }
 
         public string TxtEmail
         {
             get { return _user.Email; }
-            set { _user.Email = value; onPopertyChange("TxtEmail"); }
+            set { _user.Email = value; onPropertyChange("TxtEmail"); }
         }
 
         public string TxtFirstName
         {
             get { return _user.FirstName; }
-            set { _user.FirstName = value; onPopertyChange("TxtFirstName"); }
+            set { _user.FirstName = value; onPropertyChange("TxtFirstName"); }
         }
 
         public string TxtLastName
         {
             get { return _user.LastName; }
-            set { _user.LastName= value; onPopertyChange("TxtLastName"); }
+            set { _user.LastName= value; onPropertyChange("TxtLastName"); }
         }
 
         public string TxtPassword
         {
             get { return _user.Password; }
-            set { _user.Password = value; onPopertyChange("TxtPassword"); }
+            set { _user.Password = value; onPropertyChange("TxtPassword"); }
         }
 
         public string TxtUserName
         {
             get { return _user.Username; }
-            set { _user.Username = value; onPopertyChange("TxtUserName"); }
+            set { _user.Username = value; onPropertyChange("TxtUserName"); }
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using chatcommon.Entities;
+using chatcommon.Enums;
 using chatcommon.Interfaces;
 using chatgateway.ChatRoomWebService;
 using chatgateway.Helper;
@@ -134,30 +135,6 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<Message>> GetMessageDataByDiscussionList(List<Discussion> discussionList)
-        {
-            List<Message> result = new List<Message>();
-            try
-            {
-                result = (await _channel.get_data_message_by_discussion_listAsync(discussionList.DiscussionTypeToArray())).ArrayTypeToMessage();
-            }
-            catch (FaultException)
-            {
-                Dispose();
-                throw;
-            }
-            catch (CommunicationException)
-            {
-                _channel.Abort();
-                throw;
-            }
-            catch (TimeoutException)
-            {
-                _channel.Abort();
-            }
-            return result;
-        }
-
 
         public async Task<List<Message>> InsertMessage(List<Message> listMessage)
         {
@@ -209,9 +186,9 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<Message>> searchMessage(Message message, string filterOperator)
+        public async Task<List<Message>> searchMessage(Message message, EOperator filterOperator)
         {
-            var formatListMessageToArray = message.MessageTypeToFilterArray(filterOperator);
+            var formatListMessageToArray = message.MessageTypeToFilterArray(filterOperator.ToString());
             List<Message> result = new List<Message>();
             try
             {
@@ -234,7 +211,7 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<Message>> searchMessageFromWebService(Message item, string filterOperator)
+        public async Task<List<Message>> searchMessageFromWebService(Message item, EOperator filterOperator)
         {
             return await searchMessage(item, filterOperator);
         }

@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\WebCommunication.cs" />
     <Compile Include="Core\DiscussionGateway.cs" />
     <Compile Include="Core\MessageGateway.cs" />
     <Compile Include="Core\SecurityGateway.cs" />

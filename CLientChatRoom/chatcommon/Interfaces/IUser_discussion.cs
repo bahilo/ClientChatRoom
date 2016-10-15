@@ -1,4 +1,5 @@
 ﻿using chatcommon.Entities;
+using chatcommon.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace chatcommon.Interfaces
 
         Task<List<User_discussion>> GetUser_discussionDataById(int id);
 
-        Task<List<User_discussion>> searchUser_discussion(User_discussion user_discussion, string filterOperator);
+        Task<List<User_discussion>> searchUser_discussion(User_discussion user_discussion, EOperator filterOperator);
 
         void initializeCredential(User authenticatedUser);
     }

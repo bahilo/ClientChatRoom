@@ -35,6 +35,8 @@
       <xsd:complexType name="MessageChatRoom">
         <xsd:all>
           <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="DiscussionId" type="xsd:int" />
+          <xsd:element name="UserId" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
           <xsd:element name="Content" type="xsd:string" />
         </xsd:all>
@@ -49,6 +51,8 @@
       <xsd:complexType name="MessageFilterChatRoom">
         <xsd:all>
           <xsd:element name="ID" type="xsd:int" />
+          <xsd:element name="DiscussionId" type="xsd:int" />
+          <xsd:element name="UserId" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
           <xsd:element name="Content" type="xsd:string" />
           <xsd:element name="Operator" type="xsd:string" />
@@ -58,7 +62,6 @@
         <xsd:all>
           <xsd:element name="ID" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
-          <xsd:element name="MessageId" type="xsd:int" />
         </xsd:all>
       </xsd:complexType>
       <xsd:complexType name="AllDiscussionChatRoom">
@@ -72,7 +75,6 @@
         <xsd:all>
           <xsd:element name="ID" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
-          <xsd:element name="MessageId" type="xsd:int" />
           <xsd:element name="Operator" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>
@@ -199,12 +201,6 @@
   <wsdl:message name="get_filter_messageResponse">
     <wsdl:part name="return" type="tns:AllMessageChatRoom" />
   </wsdl:message>
-  <wsdl:message name="get_data_message_by_discussion_listRequest">
-    <wsdl:part name="discussion_array_list" type="tns:AllDiscussionChatRoom" />
-  </wsdl:message>
-  <wsdl:message name="get_data_message_by_discussion_listResponse">
-    <wsdl:part name="return" type="tns:AllMessageChatRoom" />
-  </wsdl:message>
   <wsdl:message name="get_data_discussionRequest">
     <wsdl:part name="nbLine" type="xsd:string" />
   </wsdl:message>
@@ -245,6 +241,12 @@
     <wsdl:part name="user_discussion_array_list" type="tns:AllUser_discussionChatRoom" />
   </wsdl:message>
   <wsdl:message name="get_data_discussion_by_user_discussion_listResponse">
+    <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_message_listRequest">
+    <wsdl:part name="message_array_list" type="tns:AllMessageChatRoom" />
+  </wsdl:message>
+  <wsdl:message name="get_data_discussion_by_message_listResponse">
     <wsdl:part name="return" type="tns:AllDiscussionChatRoom" />
   </wsdl:message>
   <wsdl:message name="get_data_user_discussionRequest">
@@ -354,11 +356,6 @@
       <wsdl:input message="tns:get_filter_messageRequest" />
       <wsdl:output message="tns:get_filter_messageResponse" />
     </wsdl:operation>
-    <wsdl:operation name="get_data_message_by_discussion_list">
-      <documentation>get all message by a discussion list</documentation>
-      <wsdl:input message="tns:get_data_message_by_discussion_listRequest" />
-      <wsdl:output message="tns:get_data_message_by_discussion_listResponse" />
-    </wsdl:operation>
     <wsdl:operation name="get_data_discussion">
       <documentation>Get all discussion data</documentation>
       <wsdl:input message="tns:get_data_discussionRequest" />
@@ -393,6 +390,11 @@
       <documentation>get all discussion by a user_discussion list</documentation>
       <wsdl:input message="tns:get_data_discussion_by_user_discussion_listRequest" />
       <wsdl:output message="tns:get_data_discussion_by_user_discussion_listResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_message_list">
+      <documentation>get all message by a discussion list</documentation>
+      <wsdl:input message="tns:get_data_discussion_by_message_listRequest" />
+      <wsdl:output message="tns:get_data_discussion_by_message_listResponse" />
     </wsdl:operation>
     <wsdl:operation name="get_data_user_discussion">
       <documentation>Simple Class methode testing</documentation>
@@ -553,15 +555,6 @@
         <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="get_data_message_by_discussion_list">
-      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_message_by_discussion_list" style="rpc" />
-      <wsdl:input>
-        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="get_data_discussion">
       <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion" style="rpc" />
       <wsdl:input>
@@ -618,6 +611,15 @@
     </wsdl:operation>
     <wsdl:operation name="get_data_discussion_by_user_discussion_list">
       <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion_by_user_discussion_list" style="rpc" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="get_data_discussion_by_message_list">
+      <soap:operation soapAction="http://localhost/chatroom/server.php/get_data_discussion_by_message_list" style="rpc" />
       <wsdl:input>
         <soap:body use="encoded" namespace="http://localhost/chatroom/server.php?wsdl" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>

@@ -1,4 +1,5 @@
 ﻿using chatcommon.Entities;
+using chatcommon.Enums;
 using chatcommon.Interfaces;
 using chatgateway.ChatRoomWebService;
 using chatgateway.Helper;
@@ -184,9 +185,9 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<User_discussion>> searchUser_discussion(User_discussion discussion, string filterOperator)
+        public async Task<List<User_discussion>> searchUser_discussion(User_discussion discussion, EOperator filterOperator)
         {
-            var formatListUser_discussionToArray = discussion.User_discussionTypeToFilterArray(filterOperator);
+            var formatListUser_discussionToArray = discussion.User_discussionTypeToFilterArray(filterOperator.ToString());
             List<User_discussion> result = new List<User_discussion>();
             try
             {
@@ -209,7 +210,7 @@ namespace chatgateway.Core
             return result;
         }
 
-        public async Task<List<User_discussion>> searchUser_discussionFromWebService(User_discussion item, string filterOperator)
+        public async Task<List<User_discussion>> searchUser_discussionFromWebService(User_discussion item, EOperator filterOperator)
         {
             return await searchUser_discussion(item, filterOperator);
         }

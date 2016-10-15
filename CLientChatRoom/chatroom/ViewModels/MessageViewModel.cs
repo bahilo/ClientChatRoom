@@ -19,7 +19,7 @@ namespace chatroom.ViewModels
         public BusinessLogic BL
         {
             get { return _startup.Bl; }
-            set { _startup.Bl = value; onPopertyChange("BL"); }
+            set { _startup.Bl = value; onPropertyChange("BL"); }
         }
     }
 }

@@ -10,6 +10,10 @@ namespace chatcommon.Entities
     {
         public int ID { get; set; }
 
+        public int DiscussionId { get; set; }
+
+        public int UserId { get; set; }
+
         public DateTime Date { get; set; }
 
         public string Content { get; set; }

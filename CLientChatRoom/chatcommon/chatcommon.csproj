@@ -47,6 +47,7 @@
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\User_discussion.cs" />
+    <Compile Include="Enums\EOperator.cs" />
     <Compile Include="Interfaces\IBusinessLogic.cs" />
     <Compile Include="Interfaces\IDataAccess.cs" />
     <Compile Include="Interfaces\IDiscussion.cs" />
