@@ -19,6 +19,12 @@ namespace chatroom.Models
             _message = new Message();
         }
 
+        public Message Message
+        {
+            get { return _message; }
+            set { setPropertyChange(ref _message, value); }
+        }
+
         public string TxtID
         {
             get { return _message.ID.ToString(); }

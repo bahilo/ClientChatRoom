@@ -9,5 +9,6 @@ namespace chatroom.Intefaces
     public interface IMainWindowViewModel
     {
         object getObject(string objectName);
+        Object navigation(Object centralPageContent = null);
     }
 }

@@ -24,6 +24,7 @@ namespace chatroom.ViewModels
         private NotifyTaskCompletion<int> _DialogtaskCompletion;
         private NotifyTaskCompletion<int> _signUpTaskCompletion;
         private NotifyTaskCompletion<object> _authenticateUsertaskCompletion;
+        private Func<object, object> navigation;
 
         public SecurityLoginViewModel()
         {
@@ -40,6 +41,11 @@ namespace chatroom.ViewModels
             _authenticateUsertaskCompletion.PropertyChanged += onAuthenticateUserTaskComplete_checkIfUserExist;
         }
 
+        public SecurityLoginViewModel(Func<object, object> navigation): this()
+        {
+            this.navigation = navigation;
+        }
+
         public UserModel UserModel
         {
             get { return _userModel; }
@@ -48,8 +54,8 @@ namespace chatroom.ViewModels
 
         public BusinessLogic Bl
         {
-            get { return _startup.Bl; }
-            set { _startup.Bl = value; onPropertyChange("Bl"); }
+            get { return _startup.BL; }
+            set { _startup.BL = value; onPropertyChange("Bl"); }
         }
 
         public string TxtErrorMessage
@@ -139,16 +145,7 @@ namespace chatroom.ViewModels
         public void showView()
         {
             _DialogtaskCompletion.initializeNewTask(Dialog.show(new Views.SecurityLoginView()));
-            /*await Dialog.show(new Views.SecurityLoginView());
-            if (!string.IsNullOrEmpty(TxtUserName) && !string.IsNullOrEmpty(TxtClearPassword) && Dialog.Response == 1)
-                await authenticateAgent();
-            else if (Dialog.Response == 2)
-            {
-                await Dialog.show(this);
-                signUp();                
-            }
-            else
-                showView();*/
+            
         }
 
         public void showSignUp()
@@ -159,9 +156,11 @@ namespace chatroom.ViewModels
         private async void signUp()
         {
             var userFoundList = await Bl.BLUser.searchUser(new chatcommon.Entities.User { Username = UserModel.TxtUserName }, EOperator.AND);
-            if (userFoundList.Count == 0 && TxtClearPasswordVerification.Equals(TxtClearPassword))
+            if (userFoundList.Count == 0 && !string.IsNullOrEmpty(TxtClearPassword) && TxtClearPasswordVerification.Equals(TxtClearPassword))
             {
                 var userSavedList = await Bl.BLUser.InsertUser(new List<chatcommon.Entities.User> { UserModel.User });
+                if (userSavedList.Count > 0)                
+                    startAuthentication(userSavedList[0].Username, userSavedList[0].Password); 
             }
             else if(userFoundList.Count != 0)
             {
@@ -170,7 +169,7 @@ namespace chatroom.ViewModels
             }                
             else
             {
-                TxtErrorMessage = "Password are not Identicals!";
+                TxtErrorMessage = "Password are not Identicals or empty!";
                 showSignUp();
             } 
         }
@@ -182,6 +181,7 @@ namespace chatroom.ViewModels
             if (userFound != null && userFound.ID != 0)
             {
                 UserModel.User = userFound;
+                navigation(new MessageViewModel());
                 TxtUserName = "";
                 TxtClearPassword = "";
                 TxtErrorMessage = "";
@@ -196,10 +196,10 @@ namespace chatroom.ViewModels
             //Dialog.IsDialogOpen = false;
         }
 
-        public async void startAuthentication()
+        public async void startAuthentication(string username, string password)
         {
-            TxtUserName = "<< Login here for dev mode >>";
-            TxtClearPassword = "<< Password here for dev mode >>";
+            TxtUserName = username;
+            TxtClearPassword = password;
             await authenticateAgent();
         }
     }

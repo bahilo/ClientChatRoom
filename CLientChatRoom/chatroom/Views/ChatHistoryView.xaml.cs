@@ -1,4 +1,5 @@
-﻿using System;
+﻿using chatroom.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,16 @@ namespace chatroom.Views
         public ChatHistoryView()
         {
             InitializeComponent();
+        }
+
+        private void ChatRoomHistoryWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var parent = FindParent.FindChildParent<Window>(this);
+            if (parent != null)
+            {
+                this.DataContext = (MainWindowViewModel)parent.DataContext;
+                ((MainWindowViewModel)this.DataContext).MessageViewModel.load();
+            }
         }
     }
 }

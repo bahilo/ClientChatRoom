@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="chatroom.Views.ChatHistoryView"
+             Name="ChatRoomHistoryWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,8 +7,38 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:chatroom.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" Loaded="ChatRoomHistoryWindow_Loaded">
     <Grid>
-            
+        <DataGrid Name="dgHistory" ItemsSource="{Binding MessageViewModel.MessageHistoryList, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Chat history">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                    Command="{Binding DataContext.DiscussionViewModel.SelectUserForDiscussionCommand, ElementName=dgHistory}" 
+                                    CommandParameter="{Binding Key}">
+                                <DockPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Key.TxtUserName}"/>
+                                        <TextBlock Margin="0 0 5 0" Text=":"/>
+                                        <TextBlock Text="{Binding Value.TxtContent}"/>
+                                    </StackPanel>
+                                </DockPanel>
+
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Value.TxtDate}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="chatroom.Views.ChatRoomView"
+             Name="ChatRoomWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +8,7 @@
              xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
              xmlns:local="clr-namespace:chatroom.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" Loaded="ChatRoomWindow_Loaded">
     <UserControl.Resources>
         <LinearGradientBrush x:Key="LightBrush" StartPoint="0,0" EndPoint="0,1">
             <GradientBrush.GradientStops>
@@ -24,43 +25,18 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <!--<Path Stroke="Black" StrokeThickness="1" Fill="#CCCCFF">
-                            <Path.Data>
-                                <CombinedGeometry GeometryCombineMode="Union">
-                                    <CombinedGeometry.Geometry1>
-                                        <RectangleGeometry RadiusX="20" RadiusY="20" Rect="0,0,300,200">
-                                            <RectangleGeometry.Transform>
-                                                <TranslateTransform X="30" />
-                                            </RectangleGeometry.Transform>
-                                        </RectangleGeometry>
-                                    </CombinedGeometry.Geometry1>
-                                    <CombinedGeometry.Geometry2>
-                                        <PathGeometry>
-                                            <PathFigure StartPoint="0,30">
-                                                <LineSegment Point="50,10"/>
-                                                <LineSegment Point="50,50"/>
-                                            </PathFigure>
-                                        </PathGeometry>
-                                    </CombinedGeometry.Geometry2>
-                                </CombinedGeometry>
-                            </Path.Data>
-                            <Path.Effect>
-                                <DropShadowEffect Color="Black" Opacity="0.4" Direction="-135" ShadowDepth="10"/>
-                            </Path.Effect>
-                        </Path>-->
-                        <ed:Callout Name="Border"
-                                HorizontalAlignment="Right"
+                        <ed:Callout Name="Border"                                
                                 Width="{TemplateBinding Width}"
                                 Height="{TemplateBinding Height}"
-                                MinWidth="100"
+                                MinWidth="200"
                                 MinHeight="30"
-                                Margin="0,35,10,50"
-                                AnchorPoint="0.800,-1.020"
+                                Margin="0,10,0,10"
+                                AnchorPoint="0.890,-0.100"
                                 Background="{StaticResource LightBrush}"
                                 BorderBrush="{StaticResource SolidBorderBrush}"
                                 BorderThickness="1"
                                 CalloutStyle="RoundedRectangle"
-                                Fill="#FFF4F4F5"
+                                Fill="GreenYellow"
                                 FontSize="14.667"
                                 Stroke="Black">
                             <ContentPresenter Margin="4"
@@ -78,21 +54,20 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <ed:Callout Name="Border"
-                                HorizontalAlignment="Left"
                                 Width="{TemplateBinding Width}"
                                 Height="{TemplateBinding Height}"
-                                MinWidth="100"
+                                MinWidth="200"
                                 MinHeight="30"
-                                Margin="0,35,10,50"
-                                AnchorPoint="0.197,-1.002"
+                                Margin="0,10,0,10"
+                                AnchorPoint="0.090,-0.100"
                                 Background="{StaticResource LightBrush}"
                                 BorderBrush="{StaticResource SolidBorderBrush}"
                                 BorderThickness="1"
                                 CalloutStyle="RoundedRectangle"
-                                Fill="#FFF4F4F5"
+                                Fill="Wheat"
                                 FontSize="14.667"
                                 Stroke="Black" RenderTransformOrigin="0.5,0.5">
-                            <ContentPresenter Margin="4"
+                            <ContentPresenter Margin="1"
                                           HorizontalAlignment="Left"
                                           VerticalAlignment="Top" />
                         </ed:Callout>
@@ -104,10 +79,22 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Vertical">
-            <StackPanel MinHeight="300" MaxWidth="300" Name="chatRoomZone" Orientation="Vertical"/>
+            <StackPanel Background="Beige" MinHeight="300" MaxWidth="490" Name="chatRoomZone" Orientation="Vertical">
+                <!--<Button Width="300" Style="{DynamicResource ResourceKey=Reply}">sasdv</Button>
+                <Button Width="300" Style="{DynamicResource ResourceKey=RecipientReply}">sasdv</Button>-->
+            </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBox Text="{Binding DiscussionViewModel.InputMessage, UpdateSourceTrigger=PropertyChanged}" Margin="6" Name="textBox2" TextWrapping="Wrap" AcceptsReturn="True" MinWidth="430"/>
-                <Button Name="btn_send"
+                <TextBox Text="{Binding DiscussionViewModel.InputMessage, UpdateSourceTrigger=PropertyChanged}" Margin="6" Name="textBox2" 
+                         TextWrapping="Wrap" 
+                         AcceptsReturn="True" 
+                         MinWidth="430"
+                         Height="80"
+                         MaxWidth="400"
+                         HorizontalAlignment="Stretch"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         materialDesign:HintAssist.Hint="messages..."/>
+                <Button Name="btn_send" Style="{DynamicResource MaterialDesignFloatingActionLightButton}"
                                 Command="{Binding DiscussionViewModel.SendMessageCommand}">Send</Button>
             </StackPanel>
         </StackPanel>

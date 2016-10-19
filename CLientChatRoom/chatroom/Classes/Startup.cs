@@ -3,10 +3,10 @@ using chatbusiness.Core;
 using chatcommon.Classes;
 using chatcommon.Entities;
 using chatgateway;
-using chatgateway.Classes;
 using chatgateway.Core;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace chatroom.Classes
 {
     public class Startup
     {
-        public BusinessLogic Bl { get; set; }
+        public BusinessLogic BL { get; set; }
         public DataAccess Dal { get; set; }
 
         public Startup()
@@ -33,8 +33,8 @@ namespace chatroom.Classes
                                 new SecurityGateway());
 
             BLSecurity BLSecurity = new BLSecurity(Dal);
-            Dal.SetUserCredential(await BLSecurity.AuthenticateUser(WebCommunication.ChannelUserName, WebCommunication.ChannelPassword, false));
-            Bl = new BusinessLogic(
+            Dal.SetUserCredential(await BLSecurity.AuthenticateUser(ConfigurationManager.AppSettings["Username"], ConfigurationManager.AppSettings["Password"], false));
+            BL = new BusinessLogic(
                                 new BLDiscussion(Dal),
                                 new BLUser(Dal),
                                 new BLMessage(Dal),

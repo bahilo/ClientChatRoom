@@ -13,10 +13,24 @@ namespace chatroom.Models
     public class DiscussionModel : BindBase
     {
         private Discussion _discussion;
+        private List<UserModel> _userList;
 
         public DiscussionModel()
         {
             _discussion = new Discussion();
+            _userList = new List<UserModel>();
+        }
+
+        public Discussion Discussion
+        {
+            get { return _discussion; }
+            set { setPropertyChange(ref _discussion, value); }
+        }
+
+        public List<UserModel> UserList
+        {
+            get { return _userList; }
+            set { setPropertyChange(ref _userList, value); }
         }
 
         public string TxtID

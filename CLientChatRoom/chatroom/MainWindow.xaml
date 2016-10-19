@@ -19,122 +19,62 @@
         <DataTemplate DataType="{x:Type ViewModel:SecurityLoginViewModel}">
             <View:SecuritySignUpView/>
         </DataTemplate>
-        <LinearGradientBrush x:Key="LightBrush" StartPoint="0,0" EndPoint="0,1">
-            <GradientBrush.GradientStops>
-                <GradientStopCollection>
-                    <GradientStop Color="#FFF" Offset="0.0"/>
-                    <GradientStop Color="#EEE" Offset="1.0"/>
-                </GradientStopCollection>
-            </GradientBrush.GradientStops>
-        </LinearGradientBrush>
-        <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
-        <Style x:Key="Reply" TargetType="Button">
-            <Setter Property="OverridesDefaultStyle" Value="true" />
-            <!--<Setter Property="HasDropShadow" Value="True" />-->
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <ed:Callout Name="Border"
-                                HorizontalAlignment="Right"
-                                Width="{TemplateBinding Width}"
-                                Height="{TemplateBinding Height}"
-                                MinWidth="100"
-                                MinHeight="30"
-                                Margin="0,35,10,50"
-                                AnchorPoint="0.800,-1.020"
-                                Background="{StaticResource LightBrush}"
-                                BorderBrush="{StaticResource SolidBorderBrush}"
-                                BorderThickness="1"
-                                CalloutStyle="RoundedRectangle"
-                                Fill="#FFF4F4F5"
-                                FontSize="14.667"
-                                Stroke="Black">
-                            <ContentPresenter Margin="4"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" />
-                        </ed:Callout>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="RecipientReply" TargetType="Button">
-            <Setter Property="OverridesDefaultStyle" Value="true" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <ed:Callout Name="Border"
-                                HorizontalAlignment="Left"
-                                Width="{TemplateBinding Width}"
-                                Height="{TemplateBinding Height}"
-                                MinWidth="100"
-                                MinHeight="30"
-                                Margin="0,35,10,50"
-                                AnchorPoint="0.197,-1.002"
-                                Background="{StaticResource LightBrush}"
-                                BorderBrush="{StaticResource SolidBorderBrush}"
-                                BorderThickness="1"
-                                CalloutStyle="RoundedRectangle"
-                                Fill="#FFF4F4F5"
-                                FontSize="14.667"
-                                Stroke="Black" RenderTransformOrigin="0.5,0.5">                            
-                            <ContentPresenter Margin="4"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" />
-                        </ed:Callout>
-
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <DataTemplate DataType="{x:Type ViewModel:DiscussionViewModel}">
+            <View:ChatRoomView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type ViewModel:MessageViewModel}">
+            <View:ChatHistoryView/>
+        </DataTemplate>
     </Window.Resources>
     <materialDesign:DialogHost Name="DialogBox" Identifier="RootDialog" IsOpen="{Binding Dialog.IsDialogOpen, UpdateSourceTrigger=PropertyChanged}" Loaded="DialogBox_Loaded">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel MinWidth="100">
-                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <DockPanel MinWidth="100">
+                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
                                   DockPanel.Dock="Top"
                                   HorizontalAlignment="Right" Margin="16"
                                   IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <ListBox x:Name="DemoItemsListBox" ItemsSource="{Binding UserViewModel.UserModelList, UpdateSourceTrigger=PropertyChanged}" Margin="0 16 0 16" SelectedIndex="0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                        <ListBox x:Name="DemoItemsListBox" ItemsSource="{Binding UserViewModel.UserModelList, UpdateSourceTrigger=PropertyChanged}" Margin="0 16 0 16" SelectedIndex="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{DynamicResource MaterialDesignFlatButton}"
                                     Command="{Binding DataContext.DiscussionViewModel.SelectUserForDiscussionCommand,ElementName=DemoItemsListBox}"
                                     CommandParameter="{Binding}">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding TxtUserName}"/>
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </materialDesign:DrawerHost.LeftDrawerContent>
-            <DockPanel>
-                <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryDark" DockPanel.Dock="Top" Height="55">
-                    <DockPanel>
-                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                                      x:Name="MenuToggleButton" IsChecked="{Binding Dialog.IsLeftBarClosed, UpdateSourceTrigger=PropertyChanged}"/>
-                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
-                            <StackPanel>
-                                <Button Content="Log Out."/>
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Message Conveyor</TextBlock>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding TxtUserName}"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </DockPanel>
-                </materialDesign:ColorZone>
-                <StackPanel Orientation="Vertical">
-                    <StackPanel MinHeight="300" MaxWidth="300" Name="chatRoomZone" Orientation="Vertical"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Text="{Binding DiscussionViewModel.InputMessage, UpdateSourceTrigger=PropertyChanged}" Margin="6" Name="textBox2" TextWrapping="Wrap" AcceptsReturn="True" MinWidth="430"/>
-                        <Button Name="btn_send"
-                                Command="{Binding DiscussionViewModel.SendMessageCommand}">Send</Button>
-                    </StackPanel>
-                </StackPanel>
-            </DockPanel>
-        </materialDesign:DrawerHost>
+                </materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel>
+                    <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryDark" DockPanel.Dock="Top" Height="55">
+                        <DockPanel>
+                            <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                      x:Name="MenuToggleButton" IsChecked="{Binding Dialog.IsLeftBarClosed, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button x:Name="btnBack" Style="{DynamicResource MaterialDesignFlatButton}" Margin="0,0,0,1" Command="{Binding CommandNavig}" CommandParameter="back">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ArrowLeftBold"/>
+                                </StackPanel>
+                            </Button>
+                            <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
+                                <StackPanel>
+                                    <Button Command="{Binding LogOutCommand}" Content="Log Out."/>
+                                </StackPanel>
+                            </materialDesign:PopupBox>
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Message Conveyor</TextBlock>
+                            <StackPanel Orientation="Horizontal" Margin="50 0 0 0">
+                                <materialDesign:PackIcon Kind="AccountCircle" FontSize="10"/>
+                                <TextBlock x:Name="txbWelcomeUser" Text="{Binding TxtUserName, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </materialDesign:ColorZone>
+                    <ContentControl Content="{Binding CurrentViewModel, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+            </materialDesign:DrawerHost>
         </ScrollViewer>
     </materialDesign:DialogHost>
 </Window>

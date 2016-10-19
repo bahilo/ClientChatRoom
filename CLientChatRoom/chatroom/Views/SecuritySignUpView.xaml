@@ -15,12 +15,12 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock FontSize="18" HorizontalAlignment="Center">Sign up form</TextBlock>
-                    <TextBlock Foreground="Red" Text="{Binding SecurityLoginViewModel.TxtErrorMessage, UpdateSourceTrigger=PropertyChanged}" Height="22"/>
-                </StackPanel>
-                <StackPanel Margin="0 10 0 0"  Grid.Row="1"  Orientation="Vertical">
+
+                <TextBlock FontSize="18" HorizontalAlignment="Center">Sign up form</TextBlock>
+                <TextBlock Margin="0 10 0 0" Grid.Row="1" Foreground="Red" Text="{Binding SecurityLoginViewModel.TxtErrorMessage, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                <StackPanel Grid.Row="2"  Orientation="Vertical">
                     <TextBox materialDesign:HintAssist.Hint="Last Name" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
                                         Margin="0 8 0 0" FontSize="12" Text="{Binding SecurityLoginViewModel.UserModel.TxtLastName, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBox materialDesign:HintAssist.Hint="First Name" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"

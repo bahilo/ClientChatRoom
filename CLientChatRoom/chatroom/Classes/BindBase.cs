@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using chatbusiness;
 using chatroom.ViewModels;
+using chatroom.Interfaces;
 
 namespace chatroom.Classes
 {
-    public class BindBase : INotifyPropertyChanged, IDisposable
+    public class BindBase : IState, INotifyPropertyChanged, IDisposable
     {
         protected Startup _startup;
         protected ConfirmationViewModel _dialog;
@@ -39,6 +40,14 @@ namespace chatroom.Classes
         public virtual void Dispose()
         {
             
+        }
+
+        public void Handle(Context context, Func<object, object> page)
+        {
+            var prev = context.PreviousState;
+            context.PreviousState = context.NextState;
+            context.NextState = prev;
+            page(context.NextState);
         }
 
         public Startup Startup
