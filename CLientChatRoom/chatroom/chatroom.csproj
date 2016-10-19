@@ -83,6 +83,9 @@
     <Compile Include="ViewModels\SecurityLoginViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\User_discussionViewModel.cs" />
+    <Compile Include="Views\ChatGroup.xaml.cs">
+      <DependentUpon>ChatGroup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChatHistoryView.xaml.cs">
       <DependentUpon>ChatHistoryView.xaml</DependentUpon>
     </Compile>
@@ -113,6 +116,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ChatGroup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ChatHistoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

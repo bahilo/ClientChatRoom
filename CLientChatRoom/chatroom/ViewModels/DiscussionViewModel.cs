@@ -24,7 +24,9 @@ namespace chatroom.ViewModels
         private System.Net.Sockets.TcpClient _clientSocket;
         private NetworkStream _serverStream;
         private IChatRoom _chatRoom;
+        private List<UserModel> _discussionGroupUserList;
         private Func<object, object> _page;
+        private NotifyTaskCompletion<int> _discussionGroupCreationTask;
 
 
         //----------------------------[ Models ]------------------
@@ -37,6 +39,8 @@ namespace chatroom.ViewModels
 
         public ButtonCommand<object> SendMessageCommand { get; set; }
         public ButtonCommand<UserModel> SelectUserForDiscussionCommand { get; set; }
+        public ButtonCommand<UserModel> SaveUserForDiscussionGroupCommand { get; set; }
+        public ButtonCommand<object> DiscussionGroupCreationCommand { get; set; }
 
 
 
@@ -60,12 +64,15 @@ namespace chatroom.ViewModels
         private void initEvents()
         {
             PropertyChanged += onNavigToChange;
+            _discussionGroupCreationTask.PropertyChanged += onDiscussionGroupCreationTaskCompletion;
         }
 
         private void instances()
         {
             _clientSocket = new System.Net.Sockets.TcpClient();
             _serverStream = default(NetworkStream);
+            _discussionGroupUserList = new List<UserModel>();
+            _discussionGroupCreationTask = new NotifyTaskCompletion<int>();
         }
 
 
@@ -79,11 +86,13 @@ namespace chatroom.ViewModels
         {
             SendMessageCommand = new ButtonCommand<object>(sendMessage, canSendMessage);
             SelectUserForDiscussionCommand = new ButtonCommand<UserModel>(selectUserForDiscussion, canSelectUserForDiscussion);
+            SaveUserForDiscussionGroupCommand = new ButtonCommand<UserModel>(saveUserForDiscussionGroup, canSelectUserForDiscussion);
+            DiscussionGroupCreationCommand = new ButtonCommand<object>(createDiscussionGroup, canCreateDiscussionGroup);
         }
-        
+
 
         //----------------------------[ Properties ]------------------
-             
+
 
         public User AuthenticatedUser
         {
@@ -265,6 +274,18 @@ namespace chatroom.ViewModels
                 }
         }
 
+        private async void validateDiscussionGroup()
+        {
+            if (_discussionGroupUserList.Count > 0)
+            {
+                var discussionCreatedList = await BL.BLDiscussion.InsertDiscussion(new List<Discussion> { new Discussion { Date = DateTime.Now } });
+                if(discussionCreatedList.Count > 0)
+                {
+                    var user_discussionCreatedList = await BL.BLUser_discussion.InsertUser_discussion(_discussionGroupUserList.Select(x=>new User_discussion { DiscussionId = discussionCreatedList[0].ID, UserId = x.User.ID }).ToList());
+                }                
+            }
+        }
+
         //----------------------------[ Event Handler ]------------------
 
         private void onNavigToChange(object sender, PropertyChangedEventArgs e)
@@ -272,6 +293,14 @@ namespace chatroom.ViewModels
             if (string.Equals(e.PropertyName, "NavigTo"))
             {
                 executeNavig(NavigTo);
+            }
+        }
+
+        private void onDiscussionGroupCreationTaskCompletion(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSuccessfullyCompleted") && Dialog.Response == 1)
+            {
+                validateDiscussionGroup();
             }
         }
 
@@ -335,6 +364,29 @@ namespace chatroom.ViewModels
         }
 
         private bool canSelectUserForDiscussion(UserModel arg)
+        {
+            return true;
+        }
+
+        public void saveUserForDiscussionGroup(UserModel param)
+        {
+            if (!_discussionGroupUserList.Contains(param))
+                _discussionGroupUserList.Add(param);
+            else
+                _discussionGroupUserList.Remove(param);
+        }
+
+        private bool canaveUserForDiscussionGroup(UserModel arg)
+        {
+            return true;
+        }
+
+        private void createDiscussionGroup(object obj)
+        {
+            _discussionGroupCreationTask.initializeNewTask(Dialog.show(new Views.ChatGroup()));
+        }
+
+        private bool canCreateDiscussionGroup(object arg)
         {
             return true;
         }

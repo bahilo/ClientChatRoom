@@ -30,12 +30,13 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
                 <materialDesign:DrawerHost.LeftDrawerContent>
-                    <DockPanel MinWidth="100">
+                    <DockPanel MinWidth="100" MaxHeight="440">
                         <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
                                   DockPanel.Dock="Top"
                                   HorizontalAlignment="Right" Margin="16"
                                   IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <ListBox x:Name="DemoItemsListBox" ItemsSource="{Binding UserViewModel.UserModelList, UpdateSourceTrigger=PropertyChanged}" Margin="0 16 0 16" SelectedIndex="0">
+                        <ListBox x:Name="DemoItemsListBox" ItemsSource="{Binding UserViewModel.UserModelList, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="0 16 0 16" SelectedIndex="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Button Style="{DynamicResource MaterialDesignFlatButton}"
@@ -62,7 +63,12 @@
                             </Button>
                             <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="True">
                                 <StackPanel>
-                                    <Button Command="{Binding LogOutCommand}" Content="Log Out."/>
+                                    <Button Command="{Binding DiscussionViewModel.DiscussionGroupCreationCommand}">
+                                        New Group
+                                    </Button>
+                                    <Button Command="{Binding LogOutCommand}">
+                                        Log Out.
+                                    </Button>
                                 </StackPanel>
                             </materialDesign:PopupBox>
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Message Conveyor</TextBlock>
