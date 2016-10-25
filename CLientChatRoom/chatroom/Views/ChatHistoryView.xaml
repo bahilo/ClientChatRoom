@@ -9,7 +9,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Loaded="ChatRoomHistoryWindow_Loaded">
     <Grid>
-        <DataGrid Name="dgHistory" ItemsSource="{Binding MessageViewModel.MessageHistoryList, UpdateSourceTrigger=PropertyChanged, IsAsync=True}" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DataGrid Name="dgIndividualHistory" ItemsSource="{Binding MessageViewModel.MessageIndividualHistoryList, UpdateSourceTrigger=PropertyChanged, IsAsync=True}" 
                   AutoGenerateColumns="False">
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
@@ -28,8 +32,47 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                    Command="{Binding DataContext.DiscussionViewModel.SelectUserForDiscussionCommand, ElementName=dgHistory}" 
+                                    Command="{Binding DataContext.DiscussionViewModel.SelectUserForDiscussionCommand, ElementName=dgIndividualHistory}" 
                                     CommandParameter="{Binding Key}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Key.TxtUserName}"/>
+                                    <TextBlock Margin="0 0 5 0" Text=":"/>
+                                    <TextBlock Text="{Binding Value.TxtContent}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Value.TxtDate}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <DataGrid Grid.Row="1" Name="dgGroupHistory" ItemsSource="{Binding MessageViewModel.MessageGroupHistoryList, UpdateSourceTrigger=PropertyChanged, IsAsync=True}" 
+                  AutoGenerateColumns="False">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Value.TxtStatus}" Value="1">
+                            <Setter Property="Background" Value="Beige"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Group Chat history">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                    Command="{Binding DataContext.DiscussionViewModel.GetDiscussionGroupCommand, ElementName=dgGroupHistory}" 
+                                    CommandParameter="{Binding Value.TxtGroupName}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Key.TxtUserName}"/>
                                     <TextBlock Margin="0 0 5 0" Text=":"/>

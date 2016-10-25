@@ -70,11 +70,12 @@
     </ApplicationDefinition>
     <Compile Include="Classes\BindBase.cs" />
     <Compile Include="Classes\Context.cs" />
+    <Compile Include="Classes\DiscussionGroupNameConverter.cs" />
     <Compile Include="Classes\FindParent.cs" />
     <Compile Include="Classes\Startup.cs" />
     <Compile Include="Commands\ButtonCommand.cs" />
     <Compile Include="Intefaces\IChatRoom.cs" />
-    <Compile Include="Intefaces\IMainWindow.cs" />
+    <Compile Include="Intefaces\IDiscussionViewModel.cs" />
     <Compile Include="Intefaces\IMainWindowViewModel.cs" />
     <Compile Include="Intefaces\IState.cs" />
     <Compile Include="ViewModels\ConfirmationViewModel.cs" />

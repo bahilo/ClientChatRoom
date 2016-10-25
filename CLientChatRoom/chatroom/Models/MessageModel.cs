@@ -14,6 +14,7 @@ namespace chatroom.Models
     {
         private Message _message;
         private bool _isNewMesage;
+        private string _groupName;
 
         public MessageModel()
         {
@@ -24,6 +25,12 @@ namespace chatroom.Models
         {
             get { return _message; }
             set { setPropertyChange(ref _message, value); }
+        }
+
+        public string TxtGroupName
+        {
+            get { return _groupName; }
+            set { setPropertyChange(ref _groupName, value); }
         }
 
         public string TxtID

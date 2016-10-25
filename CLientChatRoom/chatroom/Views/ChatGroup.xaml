@@ -57,13 +57,21 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" 
-                Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+        <StackPanel Grid.Row="1" Orientation="Horizontal">             
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
-            <Button.CommandParameter>
-                <system:Int32>1</system:Int32>
-            </Button.CommandParameter>
-            ACCEPT
-        </Button>
+                <Button.CommandParameter>
+                    <system:Int32>1</system:Int32>
+                </Button.CommandParameter>
+                ACCEPT
+            </Button>            
+            <Button Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                <Button.CommandParameter>
+                    <system:Int32>2</system:Int32>
+                </Button.CommandParameter>
+                CANCEL
+            </Button>
+        </StackPanel>        
     </Grid>
 </UserControl>

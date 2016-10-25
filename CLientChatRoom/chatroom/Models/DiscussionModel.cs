@@ -14,12 +14,15 @@ namespace chatroom.Models
     {
         private Discussion _discussion;
         private List<UserModel> _userList;
+        private bool _isGroupDiscussion;
+        private string _groupName;
 
         public DiscussionModel()
         {
             _discussion = new Discussion();
             _userList = new List<UserModel>();
         }
+        
 
         public Discussion Discussion
         {
@@ -27,10 +30,23 @@ namespace chatroom.Models
             set { setPropertyChange(ref _discussion, value); }
         }
 
+
+        public bool IsGroupDiscussion
+        {
+            get { return _isGroupDiscussion; }
+            set { setPropertyChange(ref _isGroupDiscussion, value); }
+        }
+
         public List<UserModel> UserList
         {
             get { return _userList; }
             set { setPropertyChange(ref _userList, value); }
+        }
+
+        public string TxtGroupName
+        {
+            get { return _groupName; }
+            set { setPropertyChange(ref _groupName, value); }
         }
 
         public string TxtID
@@ -47,8 +63,19 @@ namespace chatroom.Models
 
         public void addUser(UserModel userModel)
         {
-            if (UserList.Where(x=>x.User.ID == userModel.User.ID).Count() == 0)
+            if (UserList.Where(x => x.User.ID == userModel.User.ID).Count() == 0)
                 UserList.Add(userModel);
+
+            if (UserList.Count > 0)
+                IsGroupDiscussion = true;
+        }
+
+        public void addUser(List<UserModel> userModelList)
+        {
+            foreach (UserModel userModel in userModelList)
+            {
+                addUser(userModel);
+            }
         }
 
     }

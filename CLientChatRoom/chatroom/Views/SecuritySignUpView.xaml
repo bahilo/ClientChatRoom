@@ -41,6 +41,13 @@
                             </Button.CommandParameter>
                             ACCEPT
                         </Button>
+                        <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                            <Button.CommandParameter>
+                                <system:Int32>2</system:Int32>
+                            </Button.CommandParameter>
+                            CANCEL
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>

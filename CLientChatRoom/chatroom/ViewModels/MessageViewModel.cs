@@ -2,6 +2,7 @@
 using chatcommon.Classes;
 using chatcommon.Entities;
 using chatroom.Classes;
+using chatroom.Intefaces;
 using chatroom.Models;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,20 @@ namespace chatroom.ViewModels
     public class MessageViewModel : BindBase
     {
         private Func<object, object> navigation;
-        private Dictionary<UserModel, MessageModel> _messageBaseHistoryList;
-        
+        private Dictionary<UserModel, MessageModel> _messageIndividualHistoryList;
+        private Dictionary<UserModel, MessageModel> _messageGroupHistoryList;
+        private IDiscussionViewModel _discussionViewModel;
+
         public MessageViewModel()
         {
-            _messageBaseHistoryList = new Dictionary<UserModel, MessageModel>();
+            _messageIndividualHistoryList = new Dictionary<UserModel, MessageModel>();
+            _messageGroupHistoryList = new Dictionary<UserModel, MessageModel>();
         }
 
-        public MessageViewModel(Func<object, object> navigation) : this()
+        public MessageViewModel(Func<object, object> navigation, IDiscussionViewModel discussionViewModel) : this()
         {
             this.navigation = navigation;
+            _discussionViewModel = discussionViewModel;
         }
 
         public User AuthenticatedUser
@@ -37,23 +42,34 @@ namespace chatroom.ViewModels
             set { _startup.BL = value; onPropertyChange("BL"); }
         }
 
-        public Dictionary<UserModel, MessageModel> MessageHistoryList
+        public Dictionary<UserModel, MessageModel> MessageIndividualHistoryList
         {
-            get { return _messageBaseHistoryList; }
-            set { setPropertyChange(ref _messageBaseHistoryList, value); }
+            get { return _messageIndividualHistoryList; }
+            set { setPropertyChange(ref _messageIndividualHistoryList, value); }
+        }
+
+        public Dictionary<UserModel, MessageModel> MessageGroupHistoryList
+        {
+            get { return _messageGroupHistoryList; }
+            set { setPropertyChange(ref _messageGroupHistoryList, value); }
         }
 
         public async void load()
         {
+            Dialog.showSearch("Loading...");       
+            MessageIndividualHistoryList.Clear();
+            MessageGroupHistoryList.Clear();
+
             // searching all common discussion
-            var user_discussionAuthenticatedUserList = await BL.BLUser_discussion.searchUser_discussion(new User_discussion { UserId = AuthenticatedUser.ID }, chatcommon.Enums.EOperator.AND);
-            MessageHistoryList.Clear();
-            foreach (var user_discussion in user_discussionAuthenticatedUserList)
+            var discussionList = await _discussionViewModel.retrieveUserDiscussions(BL.BLSecurity.GetAuthenticatedUser());
+
+            foreach (var discussionModel in discussionList)
             {                
-                if (MessageHistoryList.Values.Where(x=>x.Message.DiscussionId == user_discussion.DiscussionId).Count() == 0)
+                if (MessageIndividualHistoryList.Values.Where(x=>x.Message.DiscussionId == discussionModel.Discussion.ID).Count() == 0
+                    && MessageGroupHistoryList.Values.Where(x => x.Message.DiscussionId == discussionModel.Discussion.ID).Count() == 0)
                 {
                     MessageModel lastMessage = new MessageModel();
-                    var allMessages = await BL.BLMessage.searchMessage(new Message { DiscussionId = user_discussion.DiscussionId }, chatcommon.Enums.EOperator.AND);
+                    var allMessages = await BL.BLMessage.searchMessage(new Message { DiscussionId = discussionModel.Discussion.ID }, chatcommon.Enums.EOperator.AND);
                     var messageList = allMessages.Where(x => x.UserId != AuthenticatedUser.ID && x.Status == 1).OrderByDescending(x => x.Date).ToList();
                     if (messageList.Count > 0)
                     {
@@ -71,17 +87,23 @@ namespace chatroom.ViewModels
                         lastMessage.TxtContent = lastMessage.TxtContent.Substring(0, nbCharToDisplay) + "...";
                     }
                     else if(allMessages.Count > 0)
-                    {                        
-                        var recipientsList = (await BL.BLUser_discussion.searchUser_discussion(new User_discussion { DiscussionId = user_discussion.DiscussionId }, chatcommon.Enums.EOperator.AND)).Where(x=>x.UserId != AuthenticatedUser.ID).ToList();
-                        if(recipientsList.Count() > 0)
-                           lastMessage.Message = new Message { Content = "...", DiscussionId = user_discussion.DiscussionId, UserId = recipientsList[0].UserId, Status = 0, Date = allMessages.OrderByDescending(x => x.Date).Select(x => x.Date).First() };    
-                    }/**/                     
-                               
+                    {      
+                        if(discussionModel.UserList.Count() > 0)
+                           lastMessage.Message = new Message { Content = "...", DiscussionId = discussionModel.Discussion.ID, UserId = discussionModel.UserList[0].User.ID, Status = 0, Date = allMessages.OrderByDescending(x => x.Date).Select(x => x.Date).First() };    
+                    }/**/
+
+                    lastMessage.TxtGroupName = discussionModel.TxtGroupName;          
                     var userList = await BL.BLUser.GetUserDataById(lastMessage.Message.UserId);
                     if (userList.Count > 0)
-                        MessageHistoryList = concat(MessageHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage }});
+                    {
+                        if(discussionModel.UserList.Count == 1)
+                            MessageIndividualHistoryList = concat(MessageIndividualHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
+                        else
+                            MessageGroupHistoryList = concat(MessageGroupHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
+                    }                        
                 }  
-            }         
+            }
+            Dialog.IsDialogOpen = false;         
         }
 
         private Dictionary<UserModel, MessageModel> concat(Dictionary<UserModel, MessageModel> dictTarget, Dictionary<UserModel, MessageModel> dictSource)

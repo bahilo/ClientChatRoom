@@ -24,14 +24,23 @@ namespace chatroom
         private NetworkStream _serverStream;
         private Context _context;
         private Object _currentViewModel;
+        private bool _isServerConnectionError;
+
+
+        //----------------------------[ ViewModels ]------------------
 
         public UserViewModel UserViewModel { get; set; }
         public DiscussionViewModel DiscussionViewModel { get; set; }
         public MessageViewModel MessageViewModel { get; set; }
         public SecurityLoginViewModel SecurityLoginViewModel { get; set; }
 
+
+        //----------------------------[ Commands ]------------------
+
         public ButtonCommand<string> CommandNavig { get; set; }
         public ButtonCommand<string> LogOutCommand { get; set; }
+        
+
 
         public MainWindowViewModel()
         {
@@ -39,11 +48,45 @@ namespace chatroom
             setInitEvents();
             setLogic();
             SecurityLoginViewModel.showView();
-            //SecurityLoginViewModel.startAuthentication();
-            //setEnvironment();
-
-
         }
+
+
+        //----------------------------[ Initialization ]------------------
+
+            
+        private void initializer()
+        {
+            _startup = new Startup();
+            _context = new Context(navigation);
+            DiscussionViewModel = new DiscussionViewModel(navigation);
+            UserViewModel = new UserViewModel(navigation, DiscussionViewModel);
+            MessageViewModel = new MessageViewModel(navigation, DiscussionViewModel);
+            SecurityLoginViewModel = new SecurityLoginViewModel(navigation);
+            CommandNavig = new ButtonCommand<string>(appNavig, canAppNavig);
+            LogOutCommand = new ButtonCommand<string>(logOut, canLogOut);
+            UserViewModel.Dialog = Dialog;
+            DiscussionViewModel.Dialog = Dialog;
+            MessageViewModel.Dialog = Dialog;
+            SecurityLoginViewModel.Dialog = Dialog;
+        }
+
+        private void setLogic()
+        {
+            UserViewModel.Startup = _startup;
+            DiscussionViewModel.Startup = _startup;
+            MessageViewModel.Startup = _startup;
+            SecurityLoginViewModel.Startup = _startup;
+        }
+
+        private void setInitEvents()
+        {
+            SecurityLoginViewModel.UserModel.PropertyChanged += onAuthenticatedAgentChange;
+            DiscussionViewModel.PropertyChanged += onChatRoomChange;
+        }
+
+
+        //----------------------------[ Properties ]------------------
+
 
         public Object CurrentViewModel
         {
@@ -62,10 +105,102 @@ namespace chatroom
             set { setPropertyChange(ref _context, value); }
         }
 
-        private void setInitEvents()
+
+        //----------------------------[ Actions ]------------------
+
+        private async void connectToServer()
         {
-            SecurityLoginViewModel.UserModel.PropertyChanged += onAuthenticatedAgentChange;
+            try
+            {
+                // initialize the communication with the server
+                int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+                string ipAddress = ConfigurationManager.AppSettings["IP"];
+                _clientSocket = new System.Net.Sockets.TcpClient();
+                _serverStream = default(NetworkStream);
+
+                // sign in the authenticated user on the server
+                _clientSocket.Connect(ipAddress, port);
+                DiscussionViewModel.ClientSocket = _clientSocket;
+                DiscussionViewModel.ServerStream = _serverStream;
+                _serverStream = _clientSocket.GetStream();
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("0/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
+                _serverStream.Write(outStream, 0, outStream.Length);
+                _serverStream.Flush();
+
+                // update user status (1 = connected / 0 = disconnected)
+                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
+                authenticatedUser.Status = 1;
+                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
+                
+                // create discussion thread
+                Thread ctThread = new Thread(DiscussionViewModel.getMessage);
+                ctThread.SetApartmentState(ApartmentState.STA);
+                ctThread.Start();
+            }
+            catch (Exception ex)
+            {
+                _isServerConnectionError = true;
+                CurrentViewModel = DiscussionViewModel;
+                Log.error(ex.Message);
+            }
         }
+
+        public object navigation(object centralPageContent = null)
+        {
+            if (centralPageContent != null)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Context.PreviousState = CurrentViewModel as IState;
+                    CurrentViewModel = centralPageContent;
+                    Context.NextState = centralPageContent as IState;
+                });
+            }
+            return CurrentViewModel;
+        }
+
+        private void cleanUp()
+        {
+            if (_clientSocket != null && _clientSocket.Connected)
+            {
+                signOutFromServer();
+                _clientSocket.GetStream().Close();
+                _clientSocket.Close();
+                _serverStream.Close();
+            }
+
+            // unsubscribe events
+            SecurityLoginViewModel.UserModel.PropertyChanged -= onAuthenticatedAgentChange;
+            DiscussionViewModel.PropertyChanged -= onChatRoomChange;
+        }
+
+        private async void signOutFromServer()
+        {
+            if (_serverStream != null)
+            {
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-1/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
+                _serverStream.Write(outStream, 0, outStream.Length);
+                _serverStream.Flush();/**/
+
+                // update user status to disconnected
+                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
+                authenticatedUser.Status = 0;
+                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
+            }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            UserViewModel.Dispose();
+            DiscussionViewModel.Dispose();
+            MessageViewModel.Dispose();
+            SecurityLoginViewModel.Dispose();
+            cleanUp();
+        }
+
+        //----------------------------[ Event Handler ]------------------
+
 
         private async void onAuthenticatedAgentChange(object sender, PropertyChangedEventArgs e)
         {
@@ -80,88 +215,18 @@ namespace chatroom
             }
         }
 
-        private void setLogic()
+        private void onChatRoomChange(object sender, PropertyChangedEventArgs e)
         {
-            UserViewModel.Startup = _startup;
-            DiscussionViewModel.Startup = _startup;
-            MessageViewModel.Startup = _startup;
-            SecurityLoginViewModel.Startup = _startup;
-        }
-
-        /*private void setEnvironment()
-        {
-            DiscussionViewModel.ClientSocket = _clientSocket;            
-            DiscussionViewModel.ServerStream = _serverStream;
-        }*/
-
-        private void initializer()
-        {
-            _startup = new Startup();
-            _context = new Context(navigation);
-            UserViewModel = new UserViewModel(navigation);
-            DiscussionViewModel = new DiscussionViewModel(navigation);
-            MessageViewModel = new MessageViewModel(navigation);
-            SecurityLoginViewModel = new SecurityLoginViewModel(navigation);
-            CommandNavig = new ButtonCommand<string>(appNavig, canAppNavig);
-            LogOutCommand = new ButtonCommand<string>(logOut, canLogOut);
-            UserViewModel.Dialog = Dialog;
-            DiscussionViewModel.Dialog = Dialog;
-            MessageViewModel.Dialog = Dialog;
-            SecurityLoginViewModel.Dialog = Dialog;
-
-
-            //SecurityLoginViewModel.UserModel = UserViewModel.UserModel;
-        }
-
-        private async void connectToServer()
-        {
-            try
+            if (e.PropertyName.Equals("ChatRoom") && _isServerConnectionError)
             {
-                int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
-                string ipAddress = ConfigurationManager.AppSettings["IP"];
-                _clientSocket = new System.Net.Sockets.TcpClient();
-                _serverStream = default(NetworkStream);
-
-                _clientSocket.Connect(ipAddress, port);
-                DiscussionViewModel.ClientSocket = _clientSocket;
-                DiscussionViewModel.ServerStream = _serverStream;
-                _serverStream = _clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("0/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
-                _serverStream.Write(outStream, 0, outStream.Length);
-                _serverStream.Flush();
-                /*byte[] inStream = new byte[_clientSocket.ReceiveBufferSize];
-                _serverStream.Read(inStream, 0,(int)_clientSocket.ReceiveBufferSize);
-                string dataFromServer = System.Text.Encoding.ASCII.GetString(inStream);*/
-
-                // update user status to connected
-                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
-                authenticatedUser.Status = 1; 
-                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
-                //DiscussionViewModel.msg("info", "Connected to Chat Server ...");
-                Thread ctThread = new Thread(DiscussionViewModel.getMessage);
-                ctThread.SetApartmentState(ApartmentState.STA);
-                ctThread.Start();
-            }
-            catch (Exception ex)
-            {
+                _isServerConnectionError = false;
                 DiscussionViewModel.msg("info", "Error while trying to connect to server!");
-                Log.error(ex.Message);
             }
         }
-                
-        public object navigation(object centralPageContent = null)
-        {
-            if (centralPageContent != null)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Context.PreviousState = CurrentViewModel as IState;
-                    CurrentViewModel = centralPageContent;
-                    Context.NextState = centralPageContent as IState;
-                });
-            }
-            return CurrentViewModel;
-        }
+
+
+        //----------------------------[ Action Commands ]------------------
+        
 
         private void appNavig(string obj)
         {
@@ -192,43 +257,6 @@ namespace chatroom
         private bool canLogOut(string arg)
         {
             return true;
-        }
-
-        private void cleanUp()
-        {
-            if (_clientSocket != null)
-            {
-                signOutFromServer();
-                _clientSocket.GetStream().Close();
-                _clientSocket.Close();
-                _serverStream.Close();
-            }
-            
-        }
-
-        private async void signOutFromServer()
-        {
-            if(_serverStream != null)
-            {
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-1/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
-                _serverStream.Write(outStream, 0, outStream.Length);
-                _serverStream.Flush();/**/
-
-                // update user status to disconnected
-                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
-                authenticatedUser.Status = 0;
-                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
-            }            
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            UserViewModel.Dispose();
-            DiscussionViewModel.Dispose();
-            MessageViewModel.Dispose();
-            SecurityLoginViewModel.Dispose();
-            cleanUp();
         }
     }
 }

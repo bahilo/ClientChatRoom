@@ -59,7 +59,9 @@ namespace chatroom.Views
         {            
             await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
+                int cpt = chatRoomZone.Children.Count;
                 TextBlock txtBlock = new TextBlock();
+                txtBlock.Name = "btnErrMessage" + cpt;
                 txtBlock.HorizontalAlignment = HorizontalAlignment.Center;
                 txtBlock.Text = message;
                 chatRoomZone.Children.Add(txtBlock);
@@ -68,7 +70,6 @@ namespace chatroom.Views
 
         public async void showRecipientReply(string message, bool isNewDiscussion = false)
         {
-            //await ((MainWindowViewModel)this.DataContext).MainWindow.onUIThreadAsync(() =>
             await Application.Current.Dispatcher.BeginInvoke(new Action(()=>
             {
                 int cpt = chatRoomZone.Children.Count;

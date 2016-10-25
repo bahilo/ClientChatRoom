@@ -15,7 +15,7 @@ using System.ComponentModel;
 
 namespace chatroom.ViewModels
 {
-    public class DiscussionViewModel : BindBase
+    public class DiscussionViewModel : BindBase, IDiscussionViewModel
     {
         private string _navigTo;
 
@@ -29,6 +29,8 @@ namespace chatroom.ViewModels
         private List<DiscussionModel> _discussionList;
         private Func<object, object> _page;
         private NotifyTaskCompletion<int> _discussionGroupCreationTask;
+        private bool _isGroupDiscussion;
+        private string _groupId;
 
 
         //----------------------------[ Models ]------------------
@@ -46,6 +48,7 @@ namespace chatroom.ViewModels
         public ButtonCommand<object> NavigToHomeCommand { get; set; }
         public ButtonCommand<object> ReadNewMessageCommand { get; set; }
         public ButtonCommand<UserModel> AddUserToDiscussionCommand { get; set; }
+        public ButtonCommand<string> GetDiscussionGroupCommand { get; set; }
 
 
 
@@ -69,6 +72,7 @@ namespace chatroom.ViewModels
         private void initEvents()
         {
             PropertyChanged += onNavigToChange;
+            PropertyChanged += onDiscussionModelChange;
             _discussionGroupCreationTask.PropertyChanged += onDiscussionGroupCreationTaskCompletion;
         }
 
@@ -97,6 +101,7 @@ namespace chatroom.ViewModels
             NavigToHomeCommand = new ButtonCommand<object>(goToHomePage, canGoToHomePage);
             ReadNewMessageCommand = new ButtonCommand<object>(readNewMessages, canReadNewMessages);
             AddUserToDiscussionCommand = new ButtonCommand<UserModel>(addUserToCurrentDiscussion, canAddUserToCurrentDiscussion);
+            GetDiscussionGroupCommand = new ButtonCommand<string>(getDiscussionGroup, canGetDiscussionGroup);
         }
 
 
@@ -124,6 +129,12 @@ namespace chatroom.ViewModels
         {
             get { return _startup.BL; }
             set { _startup.BL = value; onPropertyChange("BL"); }
+        }
+
+        public DiscussionModel DiscussionModel
+        {
+            get { return _discussionModel; }
+            set { setPropertyChange(ref _discussionModel, value); }
         }
 
         public IChatRoom ChatRoom
@@ -174,96 +185,74 @@ namespace chatroom.ViewModels
 
         public async void load()
         {
-            // Get all discussion where the authenticated user appear
-            List<User_discussion> allUser_discussionOfAuthencatedUserList = await BL.BLUser_discussion.searchUser_discussion(new User_discussion { UserId = AuthenticatedUser.ID }, chatcommon.Enums.EOperator.AND);
-            DiscussionList.Clear();
-            foreach (User_discussion user_discussionOfAuthenticatedUser in allUser_discussionOfAuthencatedUserList)
-            {                
-                if (DiscussionList.Where(x => x.Discussion.ID == user_discussionOfAuthenticatedUser.DiscussionId).Count() == 0)
-                {
-                    // update messages status
-                    var messageList = (await BL.BLMessage.searchMessage(new Message { DiscussionId = user_discussionOfAuthenticatedUser.DiscussionId, Status = 1 }, chatcommon.Enums.EOperator.AND)).Where(x => x.UserId != AuthenticatedUser.ID).Select(x => new Message
-                    {
-                        ID = x.ID,
-                        Content = x.Content,
-                        Date = x.Date,
-                        DiscussionId = x.DiscussionId,
-                        Status = 0,
-                        UserId = x.UserId
-                    }).ToList();
-                    var updatedMessageList = await BL.BLMessage.UpdateMessage(messageList);
+            Dialog.showSearch("Loading...");
+            // get all discussions where the authenticated user appears
+            DiscussionList = await retrieveUserDiscussions(AuthenticatedUser);
+            
+            // find the discussion where the selected user appears
+            List<DiscussionModel> discussionFoundList = new List<DiscussionModel>();
+            if(_isGroupDiscussion)
+                discussionFoundList = DiscussionList.Where(x => x.TxtID == _groupId.Split('-')[2]).ToList();
+            else
+                discussionFoundList = DiscussionList.Where(x => x.UserList.Where(y => y.User.ID == SelectedUserModel.User.ID).Count() > 0 && x.UserList.Count == 1).ToList();
 
-                    // Get All users appearing in the same discusion as the authenticated user 
-                    List<User_discussion> allUser_discussionOfOtherUserList = (await BL.BLUser_discussion.searchUser_discussion(new User_discussion { DiscussionId = user_discussionOfAuthenticatedUser.DiscussionId }, chatcommon.Enums.EOperator.AND)).Where(x => x.UserId != AuthenticatedUser.ID).ToList();
-
-                    List<Discussion> discussionList = await BL.BLDiscussion.GetDiscussionDataById(user_discussionOfAuthenticatedUser.DiscussionId);
-                    DiscussionModel discussion = new DiscussionModel();
-                    discussion.Discussion = discussionList[0];
-
-                    // Save all discussions and their users
-                    foreach (User_discussion user_discussionOfOthers in allUser_discussionOfOtherUserList)
-                    {
-                        if (discussion.UserList.Where(x=>x.User.ID == user_discussionOfOthers.UserId).Count() == 0)
-                        {
-                            List<User> userFoundList = await BL.BLUser.GetUserDataById(user_discussionOfOthers.UserId);
-                            if (discussionList.Count > 0 && userFoundList.Count > 0)
-                                discussion.addUser(new UserModel { User = userFoundList[0] });
-                        }
-                                                  
-                    }
-                    DiscussionList.Add(discussion);
-                }
-            }
-
-
-            // Find the discussion where the selected user is appearing
-            var discussionFoundList = DiscussionList.Where(x=>x.UserList.Where(y=>y.User.ID == SelectedUserModel.User.ID).Count() > 0).ToList();
-
+            // display discussion messages
             if (discussionFoundList.Count > 0)
             {
-                _discussionModel = discussionFoundList[0];
-                _discussionModel.addUser(new UserModel { User = AuthenticatedUser });
-                var messageList = (await BL.BLMessage.searchMessage(new Message { DiscussionId = _discussionModel.Discussion.ID }, chatcommon.Enums.EOperator.AND)).OrderByDescending(x => x.ID).Take(5).ToList();
-                foreach (var message in messageList.OrderBy(x => x.ID).ToList())
-                    displayMessage(message, _discussionModel.UserList.Where(x => x.User.ID == message.UserId).Select(x => x.User).FirstOrDefault());
-            }
-
-            /*if (SelectedUserModel != null)
-            {
-                var user_discussionSelectedUserList = await BL.BLUser_discussion.searchUser_discussion(new User_discussion { UserId = SelectedUserModel.User.ID }, chatcommon.Enums.EOperator.AND);
-
-                if (user_discussionSelectedUserList.Count > 0)
+                DiscussionModel = discussionFoundList[0];
+                var messageListToUpdate = (await BL.BLMessage.searchMessage(new Message { DiscussionId = discussionFoundList[0].Discussion.ID, Status = 1 }, chatcommon.Enums.EOperator.AND)).Where(x => x.UserId != AuthenticatedUser.ID).Select(x => new Message
                 {
-                    foreach (var user_discussion in user_discussionSelectedUserList)
+                    ID = x.ID,
+                    Content = x.Content,
+                    Date = x.Date,
+                    DiscussionId = x.DiscussionId,
+                    Status = 0,
+                    UserId = x.UserId
+                }).ToList();
+
+                var updatedMessageList = await BL.BLMessage.UpdateMessage(messageListToUpdate);
+
+                DiscussionModel.addUser(new UserModel { User = AuthenticatedUser });
+                var messageList = (await BL.BLMessage.searchMessage(new Message { DiscussionId = DiscussionModel.Discussion.ID }, chatcommon.Enums.EOperator.AND)).OrderByDescending(x => x.ID).Take(5).ToList();
+                foreach (var message in messageList.OrderBy(x => x.ID).ToList())
+                    displayMessage(message, DiscussionModel.UserList.Where(x => x.User.ID == message.UserId).Select(x => x.User).FirstOrDefault());
+            }
+            Dialog.IsDialogOpen = false;
+        }
+
+        public async Task<List<DiscussionModel>> retrieveUserDiscussions(User user)
+        {
+            List<DiscussionModel> output = new List<DiscussionModel>();
+            List<User_discussion> allUser_discussionOfAuthencatedUserList = await BL.BLUser_discussion.searchUser_discussion(new User_discussion { UserId = user.ID }, chatcommon.Enums.EOperator.AND);
+            foreach (User_discussion user_discussionOfAuthenticatedUser in allUser_discussionOfAuthencatedUserList)
+            {
+                if (output.Where(x => x.Discussion.ID == user_discussionOfAuthenticatedUser.DiscussionId).Count() == 0)
+                {
+                    // Get All users appearing in the same discusion as the authenticated user 
+                    List<User_discussion> allUser_discussionOfOtherUserList = (await BL.BLUser_discussion.searchUser_discussion(new User_discussion { DiscussionId = user_discussionOfAuthenticatedUser.DiscussionId }, chatcommon.Enums.EOperator.AND)).Where(x => x.UserId != user.ID).ToList();
+
+                    List<Discussion> discussionList = await BL.BLDiscussion.GetDiscussionDataById(user_discussionOfAuthenticatedUser.DiscussionId);
+                    if (discussionList.Count > 0)
                     {
-                        // searching all common discussion
-                        var user_discussionAuthenticatedUserList = await BL.BLUser_discussion.searchUser_discussion(new User_discussion { UserId = AuthenticatedUser.ID, DiscussionId = user_discussion.DiscussionId }, chatcommon.Enums.EOperator.AND);
+                        DiscussionModel discussion = new DiscussionModel();
+                        discussion.Discussion = discussionList[0];
 
-                        // if common discussion found display messages
-                        if (user_discussionAuthenticatedUserList.Count > 0)
+                        // Save all discussions and their users
+                        foreach (User_discussion user_discussionOfOthers in allUser_discussionOfOtherUserList)
                         {
-                            var discussionFoundList = await BL.BLDiscussion.GetDiscussionDataById(user_discussionAuthenticatedUserList[0].DiscussionId);
-                            if (discussionFoundList.Count > 0)
+                            if (discussion.UserList.Where(x => x.User.ID == user_discussionOfOthers.UserId).Count() == 0)
                             {
-                                _discussionModel = new DiscussionModel { Discussion = discussionFoundList[0] };
-                                _discussionModel.UserList.Add(SelectedUserModel);
-                                var messageList = (await BL.BLMessage.searchMessage(new Message { DiscussionId = _discussionModel.Discussion.ID }, chatcommon.Enums.EOperator.AND)).OrderByDescending(x => x.ID).Take(5).ToList();
-                                foreach (var message in messageList.OrderBy(x => x.ID).ToList())//
-                                {
-                                    if (_discussionModel.UserList.Where(x => x.User.ID == message.UserId).Count() == 0)
-                                    {
-                                        var userFound = (await BL.BLUser.GetUserDataById(message.UserId)).FirstOrDefault();
-                                        if (userFound != null)
-                                            _discussionModel.UserList.Add(new UserModel { User = userFound });
-                                    }
-                                    displayMessage(message, _discussionModel.UserList.Where(x => x.User.ID == message.UserId).Select(x => x.User).FirstOrDefault());
-
-                                }
+                                List<User> userFoundList = await BL.BLUser.GetUserDataById(user_discussionOfOthers.UserId);
+                                if (discussionList.Count > 0 && userFoundList.Count > 0)
+                                    discussion.addUser(new UserModel { User = userFoundList[0] });
                             }
                         }
+                        discussion.TxtGroupName = generateDiscussionGroupName(discussion.Discussion.ID, discussion.UserList);
+                        output.Add(discussion);
                     }
                 }
-            } */
+            }
+            return output;
         }
 
         public void executeNavig(string obj)
@@ -306,8 +295,8 @@ namespace chatroom.ViewModels
                     {
                         var messageFoundList = await BL.BLMessage.GetMessageDataById(messageId);
 
-                        if (discussionId == _discussionModel.Discussion.ID)
-                        {                            
+                        if (discussionId == DiscussionModel.Discussion.ID)
+                        {
                             var userFoundList = await BL.BLUser.GetUserDataById(userId);
                             if (messageFoundList.Count > 0 && userFoundList.Count > 0)
                                 displayMessage(messageFoundList[0], userFoundList[0]);
@@ -319,7 +308,7 @@ namespace chatroom.ViewModels
                             var updatedMessageList = await BL.BLMessage.UpdateMessage(new List<Message> { messageFoundList[0] });
                             System.Media.SystemSounds.Asterisk.Play();
                         }
-                            
+
                     }
                     //msg("recipient", returndata.Substring(0, returndata.IndexOf("$")));
                 }
@@ -371,48 +360,44 @@ namespace chatroom.ViewModels
                 var discussionCreatedList = await BL.BLDiscussion.InsertDiscussion(new List<Discussion> { new Discussion { Date = DateTime.Now } });
                 if (discussionCreatedList.Count > 0)
                 {
+                    // creating the link between the user and the discussion
+                    _userDiscussionGroupList.Add(new UserModel { User = AuthenticatedUser });
                     var user_discussionCreatedList = await BL.BLUser_discussion.InsertUser_discussion(_userDiscussionGroupList.Select(x => new User_discussion { DiscussionId = discussionCreatedList[0].ID, UserId = x.User.ID }).ToList());
+
+                    // setting the current dicussion to the new discussion
+                    DiscussionModel = new DiscussionModel { Discussion = discussionCreatedList[0] };
+                    DiscussionModel.addUser(_userDiscussionGroupList.Where(x => x.User.ID != AuthenticatedUser.ID).ToList());
+                    _selectedUserModel = _userDiscussionGroupList[0];
+
+                    // navigate to the discussion view
+                    NavigTo = "chatroom";
                 }
             }
         }
 
-        private string generateUserIdListString(List<UserModel> userModelList)
+        public string generateDiscussionGroupName(int discussionId, List<UserModel> userList)
         {
-            string output = "";
-            foreach (UserModel userModel in userModelList)
+            string ouput = "";            
+            string userGroup = "";
+            string userIds = "";
+            foreach (UserModel userModel in userList)
             {
-                output += userModel.TxtID+"|";
+                userGroup += userModel.TxtUserName + ";";
+                userIds += userModel.TxtID + "|";
             }
-            return output;
+            ouput += userGroup + "-" + userIds + "-" + discussionId;
+            
+            return ouput;
         }
 
-        /*public static void broadcast(string msg)
+        public override void Dispose()
         {
-            try
-            {
-                var clientsByDiscussionList = clientsList.Where(x => x.Key.Split('/')[0] == msg.Split('/')[0]).Select(x => x.Value).ToList();
-                foreach (TcpClient tcpClient in clientsByDiscussionList)
-                {
-                    TcpClient broadcastSocket;
-                    broadcastSocket = tcpClient;
-                    if (broadcastSocket.Connected)
-                    {
-                        NetworkStream broadcastStream = broadcastSocket.GetStream();
-                        Byte[] broadcastBytes = null;
+            base.Dispose();
+            PropertyChanged -= onDiscussionModelChange;
+            PropertyChanged -= onNavigToChange;
+            _discussionGroupCreationTask.PropertyChanged -= onDiscussionGroupCreationTaskCompletion;
+        }
 
-                        broadcastBytes = Encoding.ASCII.GetBytes(msg + "$");
-
-                        broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
-                        broadcastStream.Flush();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.error(ex.Message);
-            }
-        }  //end broadcast function
-        */
         //----------------------------[ Event Handler ]------------------
 
         private void onNavigToChange(object sender, PropertyChangedEventArgs e)
@@ -425,45 +410,57 @@ namespace chatroom.ViewModels
 
         private void onDiscussionGroupCreationTaskCompletion(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals("IsSuccessfullyCompleted") && Dialog.Response == 1)
+            if (e.PropertyName.Equals("IsSuccessfullyCompleted"))
             {
-                validateDiscussionGroup();
+                if (Dialog.Response == 1)
+                    validateDiscussionGroup();
+                else
+                    NavigTo = "home";
             }
         }
 
+        private void onDiscussionModelChange(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "DiscussionModel"))
+            {
+                AddUserToDiscussionCommand.RaiseCanExecuteActionChanged();
+            }
+        }
 
 
         //----------------------------[ Action Commands ]------------------
 
         private async void sendMessage(object obj)
         {
-            if (!string.IsNullOrEmpty(InputMessage))
+            if (!string.IsNullOrEmpty(InputMessage) && SelectedUserModel.User.ID != 0)
             {
-                if (_discussionModel.Discussion.ID == 0)
+                if (DiscussionModel.Discussion.ID == 0)
                 {
                     var discussionCreatedList = await BL.BLDiscussion.InsertDiscussion(new List<Discussion> { new Discussion { Date = DateTime.Now } });
                     if (discussionCreatedList.Count > 0)
                     {
-                        _discussionModel = new DiscussionModel { Discussion = discussionCreatedList[0] };
-                        _discussionModel.UserList.Add(SelectedUserModel);
+                        //DiscussionModel = 
+                        //DiscussionModel.addUser(SelectedUserModel);
                         var user_discussionCreatedList = await BL.BLUser_discussion.InsertUser_discussion(new List<User_discussion> {
                             new User_discussion { DiscussionId = discussionCreatedList[0].ID, UserId = SelectedUserModel.User.ID },
                             new User_discussion { DiscussionId = discussionCreatedList[0].ID, UserId = AuthenticatedUser.ID }
                         });
+                        var discussionList = await retrieveUserDiscussions(AuthenticatedUser);
+                        DiscussionModel = discussionList.Where(x=>x.Discussion.ID == discussionCreatedList[0].ID).FirstOrDefault() ?? new DiscussionModel { Discussion = discussionCreatedList[0] };
                     }
                 }
 
-                if (!_discussionModel.UserList.Contains(SelectedUserModel))
+                /*if (!DiscussionModel.UserList.Contains(SelectedUserModel))
                 {
                     var user_discussionCreatedList = await BL.BLUser_discussion.InsertUser_discussion(new List<User_discussion> {
-                            new User_discussion { DiscussionId = _discussionModel.Discussion.ID, UserId = SelectedUserModel.User.ID }
+                            new User_discussion { DiscussionId = DiscussionModel.Discussion.ID, UserId = SelectedUserModel.User.ID }
                         });
-                }
+                }*/
 
                 try
                 {
-                    var savedMdessage = await BL.BLMessage.InsertMessage(new List<Message> { new Message { DiscussionId = _discussionModel.Discussion.ID, Content = InputMessage, Date = DateTime.Now, UserId = AuthenticatedUser.ID } });
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(_discussionModel.TxtID + "/" + AuthenticatedUser.ID + "/" + savedMdessage[0].ID + "/" + generateUserIdListString(_discussionModel.UserList) + "/" + InputMessage + "$"); // 
+                    var savedMdessage = await BL.BLMessage.InsertMessage(new List<Message> { new Message { DiscussionId = DiscussionModel.Discussion.ID, Content = InputMessage, Date = DateTime.Now, UserId = AuthenticatedUser.ID } });
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(DiscussionModel.TxtID + "/" + AuthenticatedUser.ID + "/" + savedMdessage[0].ID + "/" + DiscussionModel.TxtGroupName.Split('-')[1]  + "/" + InputMessage + "$"); //DiscussionModel.TxtGroupName.Split(';')[1] 
                     _serverStream.Write(outStream, 0, outStream.Length);
                     _serverStream.Flush();
                     InputMessage = "";
@@ -471,7 +468,7 @@ namespace chatroom.ViewModels
                 catch (Exception ex)
                 {
                     Log.error(ex.Message);
-                    msg("info", "Error while trying to send message!");
+                    msg("info", "Error while trying to send the message!");
                 }
             }
         }
@@ -484,8 +481,11 @@ namespace chatroom.ViewModels
         private void selectUserForDiscussion(UserModel obj)
         {
             Dialog.IsLeftBarClosed = false;
-            SelectedUserModel = obj;
-            SelectUserForDiscussionCommand.RaiseCanExecuteActionChanged();
+            _isGroupDiscussion = false;
+            _groupId = "";
+            DiscussionModel = new DiscussionModel();
+            SelectedUserModel = obj;            
+
             // navig to discussion page
             NavigTo = "chatroom";
         }
@@ -539,21 +539,49 @@ namespace chatroom.ViewModels
             return true;
         }
 
-        private void addUserToCurrentDiscussion(UserModel obj)
+        private async void addUserToCurrentDiscussion(UserModel obj)
         {
-            _discussionModel.addUser(obj);
+            Dialog.IsLeftBarClosed = false;
+            var user_discussionSavedList = await BL.BLUser_discussion.InsertUser_discussion(new List<User_discussion> { new User_discussion { DiscussionId = DiscussionModel.Discussion.ID, UserId = obj.User.ID } });
+            NavigTo = "chatroom";
         }
 
         private bool canAddUserToCurrentDiscussion(UserModel arg)
         {
-            if (_discussionModel.Discussion.ID == 0)
+            if (DiscussionModel.Discussion.ID == 0)
                 return false;
 
-            if (arg != null && _discussionModel.UserList.Where(x=>x.User.ID == arg.User.ID).Count() > 0)
+            if (arg != null && DiscussionModel.UserList.Where(x => x.User.ID == arg.User.ID).Count() > 0)
                 return false;
 
             return true;
         }
+
+        private void getDiscussionGroup(string obj)
+        {
+            Dialog.IsLeftBarClosed = false;
+            SelectedUserModel = new UserModel { TxtID = obj.Split('-')[1].Split('|')[0] };
+            _isGroupDiscussion = true;
+            _groupId = obj;
+            NavigTo = "chatroom";
+
+            //var discussionFoundList = (await retrieveUserDiscussions(AuthenticatedUser)).Where(x => x.TxtID == obj.Split(';')[obj.Split(';').Count() - 1]).ToList();
+            //if (discussionFoundList.Count() > 0)
+            //{
+            //    DiscussionModel = discussionFoundList.First();
+            //    SelectedUserModel = DiscussionModel.UserList[0];
+            //    _isGroupDiscussion = true;
+            //    NavigTo = "chatroom";
+            //}            
+        }
+
+        private bool canGetDiscussionGroup(string arg)
+        {
+            return true;
+        }
+
+
+
 
     }
 }

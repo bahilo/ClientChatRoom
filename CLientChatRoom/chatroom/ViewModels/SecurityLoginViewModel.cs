@@ -109,10 +109,15 @@ namespace chatroom.ViewModels
 
         private void onSignUpTaskComplete_checkIfUserFound(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals("IsSuccessfullyCompleted") && Dialog.Response == 1)
+            if (e.PropertyName.Equals("IsSuccessfullyCompleted"))
             {
-                Dialog.Response = 0;
-                signUp();
+                if (Dialog.Response == 1)
+                {
+                    Dialog.Response = 0;
+                    signUp();
+                }
+                else if(Dialog.Response == 2)
+                    showView();
             }
         }
 
@@ -195,6 +200,14 @@ namespace chatroom.ViewModels
             return null;
             //Dialog.IsDialogOpen = false;
         }
-        
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _DialogtaskCompletion.PropertyChanged -= onDialogDisplayTaskComplete_authenticateUser;
+            _signUpTaskCompletion.PropertyChanged -= onSignUpTaskComplete_checkIfUserFound;
+            _authenticateUsertaskCompletion.PropertyChanged -= onAuthenticateUserTaskComplete_checkIfUserExist;
+        }
+
     }
 }
