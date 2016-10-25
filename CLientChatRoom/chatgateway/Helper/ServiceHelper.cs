@@ -26,6 +26,7 @@ namespace chatgateway.Helper
                 {
                     User user = new User();
                     user.ID = userChat.ID;
+                    user.Status = userChat.Status;
                     user.FirstName = Utility.decodeBase64ToString(userChat.FirstName);
                     user.LastName = Utility.decodeBase64ToString(userChat.LastName);
                     user.Username = Utility.decodeBase64ToString(userChat.Username);
@@ -49,6 +50,7 @@ namespace chatgateway.Helper
                 {
                     UserChatRoom userChat = new UserChatRoom();
                     userChat.ID = user.ID;
+                    userChat.Status = user.Status;
                     userChat.FirstName = Utility.encodeStringToBase64(user.FirstName);
                     userChat.LastName = Utility.encodeStringToBase64(user.LastName);
                     userChat.Username = Utility.encodeStringToBase64(user.Username);
@@ -68,6 +70,7 @@ namespace chatgateway.Helper
             if (user != null)
             {
                 userChat.ID = user.ID;
+                userChat.Status = user.Status;
                 userChat.FirstName = Utility.encodeStringToBase64(user.FirstName);
                 userChat.LastName = Utility.encodeStringToBase64(user.LastName);
                 userChat.Username = Utility.encodeStringToBase64(user.Username);
@@ -146,6 +149,7 @@ namespace chatgateway.Helper
                 {
                     Message message = new Message();
                     message.ID = messageChat.ID;
+                    message.Status = messageChat.Status;
                     message.UserId = messageChat.UserId;
                     message.DiscussionId = messageChat.DiscussionId;
                     message.Date = Utility.convertToDateTime(Utility.decodeBase64ToString(messageChat.Date));
@@ -168,6 +172,7 @@ namespace chatgateway.Helper
                 {
                     MessageChatRoom messageChat = new MessageChatRoom();
                     messageChat.ID = message.ID;
+                    messageChat.Status = message.Status;
                     messageChat.UserId = message.UserId;
                     messageChat.DiscussionId = message.DiscussionId;
                     messageChat.Date = Utility.encodeStringToBase64(message.Date.ToString("yyyy-MM-dd H:mm:ss"));
@@ -186,6 +191,7 @@ namespace chatgateway.Helper
             if (message != null)
             {
                 messageChat.ID = message.ID;
+                messageChat.Status = message.Status;
                 messageChat.UserId = message.UserId;
                 messageChat.DiscussionId = message.DiscussionId;
                 messageChat.Date = Utility.encodeStringToBase64(message.Date.ToString("yyyy-MM-dd H:mm:ss"));

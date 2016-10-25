@@ -13,6 +13,8 @@ using chatroom.Interfaces;
 using System.Windows;
 using chatroom.Models;
 using chatcommon.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace chatroom
 {
@@ -22,7 +24,7 @@ namespace chatroom
         private NetworkStream _serverStream;
         private Context _context;
         private Object _currentViewModel;
-        
+
         public UserViewModel UserViewModel { get; set; }
         public DiscussionViewModel DiscussionViewModel { get; set; }
         public MessageViewModel MessageViewModel { get; set; }
@@ -48,7 +50,7 @@ namespace chatroom
             get { return _currentViewModel; }
             set { setPropertyChange(ref _currentViewModel, value); }
         }
-        
+
         public string TxtUserName
         {
             get { return (_startup.BL != null) ? _startup.BL.BLSecurity.GetAuthenticatedUser().Username : ""; }
@@ -83,7 +85,7 @@ namespace chatroom
             UserViewModel.Startup = _startup;
             DiscussionViewModel.Startup = _startup;
             MessageViewModel.Startup = _startup;
-            SecurityLoginViewModel.Startup = _startup;      
+            SecurityLoginViewModel.Startup = _startup;
         }
 
         /*private void setEnvironment()
@@ -99,7 +101,7 @@ namespace chatroom
             UserViewModel = new UserViewModel(navigation);
             DiscussionViewModel = new DiscussionViewModel(navigation);
             MessageViewModel = new MessageViewModel(navigation);
-            SecurityLoginViewModel = new SecurityLoginViewModel(navigation);            
+            SecurityLoginViewModel = new SecurityLoginViewModel(navigation);
             CommandNavig = new ButtonCommand<string>(appNavig, canAppNavig);
             LogOutCommand = new ButtonCommand<string>(logOut, canLogOut);
             UserViewModel.Dialog = Dialog;
@@ -111,8 +113,8 @@ namespace chatroom
             //SecurityLoginViewModel.UserModel = UserViewModel.UserModel;
         }
 
-        private void connectToServer()
-        {       
+        private async void connectToServer()
+        {
             try
             {
                 int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
@@ -123,10 +125,18 @@ namespace chatroom
                 _clientSocket.Connect(ipAddress, port);
                 DiscussionViewModel.ClientSocket = _clientSocket;
                 DiscussionViewModel.ServerStream = _serverStream;
-                /*_serverStream = _clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("0/"+_startup.Bl.BLSecurity.GetAuthenticatedUser().Username +"/0/"+ "$");//textBox3.Text
+                _serverStream = _clientSocket.GetStream();
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("0/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
                 _serverStream.Write(outStream, 0, outStream.Length);
-                _serverStream.Flush();*/
+                _serverStream.Flush();
+                /*byte[] inStream = new byte[_clientSocket.ReceiveBufferSize];
+                _serverStream.Read(inStream, 0,(int)_clientSocket.ReceiveBufferSize);
+                string dataFromServer = System.Text.Encoding.ASCII.GetString(inStream);*/
+
+                // update user status to connected
+                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
+                authenticatedUser.Status = 1; 
+                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
                 //DiscussionViewModel.msg("info", "Connected to Chat Server ...");
                 Thread ctThread = new Thread(DiscussionViewModel.getMessage);
                 ctThread.SetApartmentState(ApartmentState.STA);
@@ -138,7 +148,7 @@ namespace chatroom
                 Log.error(ex.Message);
             }
         }
-
+                
         public object navigation(object centralPageContent = null)
         {
             if (centralPageContent != null)
@@ -164,7 +174,7 @@ namespace chatroom
                     Context.Request();
                     break;
                 default:
-                    CurrentViewModel = MessageViewModel;   
+                    CurrentViewModel = MessageViewModel;
                     break;
             }
         }
@@ -182,6 +192,43 @@ namespace chatroom
         private bool canLogOut(string arg)
         {
             return true;
+        }
+
+        private void cleanUp()
+        {
+            if (_clientSocket != null)
+            {
+                signOutFromServer();
+                _clientSocket.GetStream().Close();
+                _clientSocket.Close();
+                _serverStream.Close();
+            }
+            
+        }
+
+        private async void signOutFromServer()
+        {
+            if(_serverStream != null)
+            {
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-1/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
+                _serverStream.Write(outStream, 0, outStream.Length);
+                _serverStream.Flush();/**/
+
+                // update user status to disconnected
+                User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
+                authenticatedUser.Status = 0;
+                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
+            }            
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            UserViewModel.Dispose();
+            DiscussionViewModel.Dispose();
+            MessageViewModel.Dispose();
+            SecurityLoginViewModel.Dispose();
+            cleanUp();
         }
     }
 }

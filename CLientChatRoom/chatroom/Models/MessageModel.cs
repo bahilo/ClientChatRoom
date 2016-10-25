@@ -13,6 +13,7 @@ namespace chatroom.Models
     public class MessageModel : BindBase
     {
         private Message _message;
+        private bool _isNewMesage;
 
         public MessageModel()
         {
@@ -37,16 +38,34 @@ namespace chatroom.Models
             set { _message.DiscussionId = Convert.ToInt32(value); onPropertyChange("TxtDiscussion"); }
         }
 
+        public string TxtUserId
+        {
+            get { return _message.UserId.ToString(); }
+            set { _message.UserId = Convert.ToInt32(value); onPropertyChange("TxtUserId"); }
+        }
+
         public string TxtDate
         {
             get { return _message.Date.ToString(); }
             set { _message.Date = Utility.convertToDateTime(value); onPropertyChange("TxtDate"); }
         }
 
+        public bool IsNewMessage
+        {
+            get { return _isNewMesage; }
+            set { setPropertyChange(ref _isNewMesage, value); }
+        }
+
         public string TxtContent
         {
             get { return _message.Content; }
             set { _message.Content = value; onPropertyChange("TxtContent"); }
+        }
+
+        public string TxtStatus
+        {
+            get { return _message.Status.ToString(); }
+            set { _message.Status = Convert.ToInt32(value); onPropertyChange("TxtStatus"); }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace chatroom.ViewModels
         private NotifyTaskCompletion<int> _DialogtaskCompletion;
         private NotifyTaskCompletion<int> _signUpTaskCompletion;
         private NotifyTaskCompletion<object> _authenticateUsertaskCompletion;
-        private Func<object, object> navigation;
+        private Func<object, object> _page;
 
         public SecurityLoginViewModel()
         {
@@ -43,7 +43,7 @@ namespace chatroom.ViewModels
 
         public SecurityLoginViewModel(Func<object, object> navigation): this()
         {
-            this.navigation = navigation;
+            this._page = navigation;
         }
 
         public UserModel UserModel
@@ -122,7 +122,7 @@ namespace chatroom.ViewModels
             {
                 int result = _DialogtaskCompletion.Result;
                 if (!string.IsNullOrEmpty(TxtUserName) && !string.IsNullOrEmpty(TxtClearPassword) && result == 1)
-                    _authenticateUsertaskCompletion.initializeNewTask(authenticateAgent());
+                    _authenticateUsertaskCompletion.initializeNewTask(authenticateAgent(TxtUserName, TxtClearPassword));
                 else if (result == 2)
                     showSignUp();                
                 else
@@ -160,7 +160,7 @@ namespace chatroom.ViewModels
             {
                 var userSavedList = await Bl.BLUser.InsertUser(new List<chatcommon.Entities.User> { UserModel.User });
                 if (userSavedList.Count > 0)                
-                    startAuthentication(userSavedList[0].Username, userSavedList[0].Password); 
+                    await authenticateAgent(userSavedList[0].Username, userSavedList[0].Password, false); 
             }
             else if(userFoundList.Count != 0)
             {
@@ -174,14 +174,14 @@ namespace chatroom.ViewModels
             } 
         }
 
-        private async Task<object> authenticateAgent()
+        public async Task<object> authenticateAgent(string username, string password, bool isClearPassword = true)
         {
             //Dialog.showSearch("Searching...");
-            var userFound = await Bl.BLSecurity.AuthenticateUser(TxtUserName, TxtClearPassword);
+            var userFound = await Bl.BLSecurity.AuthenticateUser(username, password, isClearPassword);
             if (userFound != null && userFound.ID != 0)
             {
                 UserModel.User = userFound;
-                navigation(new MessageViewModel());
+                _page(new MessageViewModel());
                 TxtUserName = "";
                 TxtClearPassword = "";
                 TxtErrorMessage = "";
@@ -195,12 +195,6 @@ namespace chatroom.ViewModels
             return null;
             //Dialog.IsDialogOpen = false;
         }
-
-        public async void startAuthentication(string username, string password)
-        {
-            TxtUserName = username;
-            TxtClearPassword = password;
-            await authenticateAgent();
-        }
+        
     }
 }

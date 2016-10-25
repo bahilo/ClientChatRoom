@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="4be8bea4-99c0-4fdb-870d-24462fe9eaac" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="0c93cf08-c1c5-453b-afb9-edb2f608f4ac" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,7 +22,7 @@
     <MetadataSource Address="http://localhost/chatroom/server.php?wsdl" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="server.wsdl" MetadataType="Wsdl" ID="65090ee8-762a-48f2-b924-56fe3f6a3645" SourceId="1" SourceUrl="http://localhost/chatroom/server.php?wsdl" />
+    <MetadataFile FileName="server.wsdl" MetadataType="Wsdl" ID="084380d9-cf62-4ecf-8705-6c38197c5697" SourceId="1" SourceUrl="http://localhost/chatroom/server.php?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

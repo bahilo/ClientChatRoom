@@ -40,7 +40,7 @@ namespace chatroom.ViewModels
 
         public async void load()
         {
-            UserModelList = (await BL.BLUser.GetUserData(999)).Where(x=>x.ID != BL.BLSecurity.GetAuthenticatedUser().ID && x.Username != "channel").Select(x => new UserModel { User = x }).ToList();
+            UserModelList = (await BL.BLUser.GetUserData(999)).Where(x=>x.ID != BL.BLSecurity.GetAuthenticatedUser().ID && x.Username != "channel").Select(x => new UserModel { User = x }).OrderBy(x=>x.User.Status).ToList();
         }
     }
 }

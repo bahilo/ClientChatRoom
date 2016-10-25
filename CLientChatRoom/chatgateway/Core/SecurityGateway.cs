@@ -9,6 +9,7 @@ using System.ComponentModel;
 using chatgateway.ChatRoomWebService;
 using chatgateway.Helper;
 using System.ServiceModel;
+using chatcommon.Classes;
 
 namespace chatgateway.Core
 {
@@ -60,7 +61,7 @@ namespace chatgateway.Core
             {
                 setServiceCredential(username, password);
                 //UserChatRoom[] agentArray = new UserChatRoom[1];
-                UserChatRoom agentArray = await _channel.get_authenticate_userAsync(username, password);
+                UserChatRoom agentArray = await _channel.get_authenticate_userAsync(Utility.encodeStringToBase64(username), Utility.encodeStringToBase64(password));
                 agentFound = new UserChatRoom[] { agentArray }.ArrayTypeToUser().FirstOrDefault();
                 if (agentFound == null || agentFound.ID == 0)
                     throw new ApplicationException(string.Format("Your login {0} does not match any user in our database!", username));

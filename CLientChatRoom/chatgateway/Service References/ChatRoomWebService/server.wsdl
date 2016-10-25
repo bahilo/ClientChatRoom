@@ -12,6 +12,7 @@
           <xsd:element name="Email" type="xsd:string" />
           <xsd:element name="Username" type="xsd:string" />
           <xsd:element name="Password" type="xsd:string" />
+          <xsd:element name="Status" type="xsd:int" />
         </xsd:all>
       </xsd:complexType>
       <xsd:complexType name="AllUserChatRoom">
@@ -29,6 +30,7 @@
           <xsd:element name="Email" type="xsd:string" />
           <xsd:element name="Username" type="xsd:string" />
           <xsd:element name="Password" type="xsd:string" />
+          <xsd:element name="Status" type="xsd:int" />
           <xsd:element name="Operator" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>
@@ -38,6 +40,7 @@
           <xsd:element name="DiscussionId" type="xsd:int" />
           <xsd:element name="UserId" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
+          <xsd:element name="Status" type="xsd:int" />
           <xsd:element name="Content" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>
@@ -55,6 +58,7 @@
           <xsd:element name="UserId" type="xsd:int" />
           <xsd:element name="Date" type="xsd:string" />
           <xsd:element name="Content" type="xsd:string" />
+          <xsd:element name="Status" type="xsd:int" />
           <xsd:element name="Operator" type="xsd:string" />
         </xsd:all>
       </xsd:complexType>

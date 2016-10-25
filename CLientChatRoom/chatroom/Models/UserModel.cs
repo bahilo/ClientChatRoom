@@ -60,5 +60,11 @@ namespace chatroom.Models
             set { _user.Username = value; onPropertyChange("TxtUserName"); }
         }
 
+        public string TxtStatus
+        {
+            get { return _user.Status.ToString(); }
+            set { _user.Status = Convert.ToInt32(value); onPropertyChange("TxtStatus"); }
+        }
+
     }
 }

@@ -64,11 +64,13 @@ namespace chatcommon.Classes
 
         public static string decodeBase64ToString(string encodedString)
         {
-            string returnValue = "";
-            /*bool isValidBase64Encoded;
-            if (!string.IsNullOrEmpty(encodedString))
+            string returnValue = encodedString;
+            if (!string.IsNullOrEmpty(encodedString) && isBase64Encoded(encodedString))
             {
-                encodedString = encodedString.Trim();
+                byte[] encodedDataAsBytes = System.Convert.FromBase64String(encodedString);
+                returnValue = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
+
+                /*encodedString = encodedString.Trim();
                 isValidBase64Encoded = (encodedString.Length % 4 == 0) && Regex.IsMatch(encodedString, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
                 if (isValidBase64Encoded)
                 {
@@ -79,10 +81,10 @@ namespace chatcommon.Classes
                 {
                     returnValue = encodedString;
                     Debug.WriteLine(string.Format("[Warning] - decode base64 of not encoded variable ({0})", encodedString));
-                }
-            }*/
+                }*/
+            }
 
-            try
+            /*try
             {
                 byte[] encodedDataAsBytes = System.Convert.FromBase64String(encodedString);
                 returnValue = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
@@ -91,9 +93,29 @@ namespace chatcommon.Classes
             {
                 Debug.WriteLine(string.Format("[Warning] - decode base64 of not encoded variable ({0})", encodedString));
                 return encodedString;
-            }
+            }*/
 
             return returnValue;
+        }
+
+        private static bool isBase64Encoded(string inputString)
+        {
+            try
+            {
+                byte[] encodedDataAsBytes = System.Convert.FromBase64String(inputString);
+                string decoded_data = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
+
+                string encoded_data = encodeStringToBase64(decoded_data);
+
+                if (encoded_data != inputString)
+                    return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }            
+
+            return true;
         }
 
         public static bool uploadFIle(string ftpUrl, string fileFullPath, string username, string password)
@@ -119,16 +141,16 @@ namespace chatcommon.Classes
                 buffer = Encoding.UTF8.GetBytes(streamReaderSource.ReadToEnd());
                 //stream = File.OpenRead(fileFullPath);
 
-                
+
 
                 //do
                 //{
-                    //readBytes = stream.Read(buffer, 0, buffer.Length);
-                    req.ContentLength = buffer.Length;
+                //readBytes = stream.Read(buffer, 0, buffer.Length);
+                req.ContentLength = buffer.Length;
                 requestStream = req.GetRequestStream();
                 //readBytes = stream.Read(buffer, 0, buffer.Length);
                 requestStream.Write(buffer, 0, buffer.Length);
-                    //count += readBytes;
+                //count += readBytes;
                 //}
                 //while (readBytes != 0);
             }

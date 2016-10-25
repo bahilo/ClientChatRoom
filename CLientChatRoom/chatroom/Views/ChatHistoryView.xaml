@@ -9,7 +9,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Loaded="ChatRoomHistoryWindow_Loaded">
     <Grid>
-        <DataGrid Name="dgHistory" ItemsSource="{Binding MessageViewModel.MessageHistoryList, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+        <DataGrid Name="dgHistory" ItemsSource="{Binding MessageViewModel.MessageHistoryList, UpdateSourceTrigger=PropertyChanged, IsAsync=True}" 
+                  AutoGenerateColumns="False">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Value.TxtStatus}" Value="1">
+                            <Setter Property="Background" Value="Beige"/>
+                        </DataTrigger>
+                        <!--<DataTrigger Binding="{Binding Value.TxtStatus}" Value="0">
+                            <Setter Property="Background" Value="Gray"/>
+                        </DataTrigger>-->
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Chat history">
                     <DataGridTemplateColumn.CellTemplate>
@@ -17,14 +30,11 @@
                             <Button Style="{DynamicResource MaterialDesignFlatButton}"
                                     Command="{Binding DataContext.DiscussionViewModel.SelectUserForDiscussionCommand, ElementName=dgHistory}" 
                                     CommandParameter="{Binding Key}">
-                                <DockPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Key.TxtUserName}"/>
-                                        <TextBlock Margin="0 0 5 0" Text=":"/>
-                                        <TextBlock Text="{Binding Value.TxtContent}"/>
-                                    </StackPanel>
-                                </DockPanel>
-
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Key.TxtUserName}"/>
+                                    <TextBlock Margin="0 0 5 0" Text=":"/>
+                                    <TextBlock Text="{Binding Value.TxtContent}"/>
+                                </StackPanel>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

@@ -33,6 +33,7 @@ namespace chatroom.Classes
                                 new SecurityGateway());
 
             BLSecurity BLSecurity = new BLSecurity(Dal);
+            // Dal.SetUserCredential(new User { Username = ConfigurationManager.AppSettings["Username"], Password = ConfigurationManager.AppSettings["Password"] });
             Dal.SetUserCredential(await BLSecurity.AuthenticateUser(ConfigurationManager.AppSettings["Username"], ConfigurationManager.AppSettings["Password"], false));
             BL = new BusinessLogic(
                                 new BLDiscussion(Dal),

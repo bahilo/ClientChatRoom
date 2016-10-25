@@ -372,6 +372,8 @@ namespace chatgateway.ChatRoomWebService {
         
         private string passwordField;
         
+        private int statusField;
+        
         /// <remarks/>
         public int ID {
             get {
@@ -435,6 +437,17 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.passwordField = value;
                 this.RaisePropertyChanged("Password");
+            }
+        }
+        
+        /// <remarks/>
+        public int Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+                this.RaisePropertyChanged("Status");
             }
         }
         
@@ -637,6 +650,8 @@ namespace chatgateway.ChatRoomWebService {
         
         private string contentField;
         
+        private int statusField;
+        
         private string operatorField;
         
         /// <remarks/>
@@ -695,6 +710,17 @@ namespace chatgateway.ChatRoomWebService {
         }
         
         /// <remarks/>
+        public int Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+                this.RaisePropertyChanged("Status");
+            }
+        }
+        
+        /// <remarks/>
         public string Operator {
             get {
                 return this.operatorField;
@@ -730,6 +756,8 @@ namespace chatgateway.ChatRoomWebService {
         private int userIdField;
         
         private string dateField;
+        
+        private int statusField;
         
         private string contentField;
         
@@ -774,6 +802,17 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.dateField = value;
                 this.RaisePropertyChanged("Date");
+            }
+        }
+        
+        /// <remarks/>
+        public int Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+                this.RaisePropertyChanged("Status");
             }
         }
         
@@ -875,6 +914,8 @@ namespace chatgateway.ChatRoomWebService {
         
         private string passwordField;
         
+        private int statusField;
+        
         private string operatorField;
         
         /// <remarks/>
@@ -940,6 +981,17 @@ namespace chatgateway.ChatRoomWebService {
             set {
                 this.passwordField = value;
                 this.RaisePropertyChanged("Password");
+            }
+        }
+        
+        /// <remarks/>
+        public int Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+                this.RaisePropertyChanged("Status");
             }
         }
         

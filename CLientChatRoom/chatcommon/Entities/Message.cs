@@ -17,5 +17,7 @@ namespace chatcommon.Entities
         public DateTime Date { get; set; }
 
         public string Content { get; set; }
+
+        public int Status { get; set; }
     }
 }

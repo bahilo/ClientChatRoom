@@ -44,6 +44,13 @@ namespace chatroom.Models
             get { return _discussion.Date.ToString(); }
             set { _discussion.Date = Utility.convertToDateTime(value); onPropertyChange("TxtDate"); }
         }
+
+        public void addUser(UserModel userModel)
+        {
+            if (UserList.Where(x=>x.User.ID == userModel.User.ID).Count() == 0)
+                UserList.Add(userModel);
+        }
+
     }
 
     

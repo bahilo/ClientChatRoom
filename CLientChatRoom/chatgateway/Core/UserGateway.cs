@@ -225,7 +225,7 @@ namespace chatgateway.Core
                 Dispose();
                 throw;
             }
-            catch (CommunicationException)
+            catch (CommunicationException ex)
             {
                 _channel.Abort();
                 throw;
