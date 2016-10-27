@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
+using chatcommon.Interfaces;
 
 namespace chatroom.ViewModels
 {
@@ -52,7 +53,7 @@ namespace chatroom.ViewModels
             set { setPropertyChange(ref _userModel, value); }
         }
 
-        public BusinessLogic Bl
+        public IBusinessLogic Bl
         {
             get { return _startup.BL; }
             set { _startup.BL = value; onPropertyChange("Bl"); }
@@ -129,7 +130,9 @@ namespace chatroom.ViewModels
                 if (!string.IsNullOrEmpty(TxtUserName) && !string.IsNullOrEmpty(TxtClearPassword) && result == 1)
                     _authenticateUsertaskCompletion.initializeNewTask(authenticateAgent(TxtUserName, TxtClearPassword));
                 else if (result == 2)
-                    showSignUp();                
+                    showSignUp();
+                else if (result == 3)
+                    Application.Current.Shutdown();
                 else
                     showView();
             }

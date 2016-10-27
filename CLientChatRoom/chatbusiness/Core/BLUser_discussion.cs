@@ -79,6 +79,10 @@ namespace chatbusiness.Core
         public async Task<List<User_discussion>> GetUser_discussionData(int nbLine)
         {
             List<User_discussion> result = new List<User_discussion>();
+
+            if (nbLine == 0)
+                return result;
+
             try
             {
                 result = await DAC.User_discussionGateway.GetUser_discussionData(nbLine);
@@ -93,6 +97,10 @@ namespace chatbusiness.Core
         public async Task<List<User_discussion>> GetUser_discussionDataById(int id)
         {
             List<User_discussion> result = new List<User_discussion>();
+
+            if (id == 0)
+                return result;
+
             try
             {
                 result = await DAC.User_discussionGateway.GetUser_discussionDataById(id);

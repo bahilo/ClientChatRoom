@@ -79,6 +79,10 @@ namespace chatbusiness.Core
         public async Task<List<Message>> GetMessageData(int nbLine)
         {
             List<Message> result = new List<Message>();
+
+            if (nbLine == 0)
+                return result;
+
             try
             {
                 result = await DAC.MessageGateway.GetMessageData(nbLine);
@@ -93,6 +97,10 @@ namespace chatbusiness.Core
         public async Task<List<Message>> GetMessageDataById(int id)
         {
             List<Message> result = new List<Message>();
+
+            if (id == 0)
+                return result;
+
             try
             {
                 result = await DAC.MessageGateway.GetMessageDataById(id);

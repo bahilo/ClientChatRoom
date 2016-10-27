@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace chatcommon.Classes
 {
-    public static class Utility
+    public class Utility
     {
         public static DateTime DateTimeMinValueInSQL2005 = new DateTime(1753, 1, 1);
 
@@ -69,32 +69,7 @@ namespace chatcommon.Classes
             {
                 byte[] encodedDataAsBytes = System.Convert.FromBase64String(encodedString);
                 returnValue = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
-
-                /*encodedString = encodedString.Trim();
-                isValidBase64Encoded = (encodedString.Length % 4 == 0) && Regex.IsMatch(encodedString, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
-                if (isValidBase64Encoded)
-                {
-                    byte[] encodedDataAsBytes = System.Convert.FromBase64String(encodedString);
-                    returnValue = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
-                }
-                else
-                {
-                    returnValue = encodedString;
-                    Debug.WriteLine(string.Format("[Warning] - decode base64 of not encoded variable ({0})", encodedString));
-                }*/
             }
-
-            /*try
-            {
-                byte[] encodedDataAsBytes = System.Convert.FromBase64String(encodedString);
-                returnValue = System.Text.ASCIIEncoding.ASCII.GetString(encodedDataAsBytes);
-            }
-            catch (Exception)
-            {
-                Debug.WriteLine(string.Format("[Warning] - decode base64 of not encoded variable ({0})", encodedString));
-                return encodedString;
-            }*/
-
             return returnValue;
         }
 
@@ -123,36 +98,18 @@ namespace chatcommon.Classes
             bool isComplete = false;
             FtpWebRequest req = (FtpWebRequest)WebRequest.Create(ftpUrl);
             req.UseBinary = true;
-            //req.UsePassive = true;
             req.KeepAlive = true;
             req.Method = WebRequestMethods.Ftp.UploadFile;
             req.Credentials = new NetworkCredential(username, password);
             Stream requestStream = null;
-            //FileStream stream = null;
-
-            // Copy the file contents to the request stream.
-            //const int bufferLength = 2048;
-            byte[] buffer;// = new byte[bufferLength];
-            //int count = 0;
-            //int readBytes = 0;
+            byte[] buffer;
             StreamReader streamReaderSource = new StreamReader(fileFullPath);
             try
             {
                 buffer = Encoding.UTF8.GetBytes(streamReaderSource.ReadToEnd());
-                //stream = File.OpenRead(fileFullPath);
-
-
-
-                //do
-                //{
-                //readBytes = stream.Read(buffer, 0, buffer.Length);
                 req.ContentLength = buffer.Length;
                 requestStream = req.GetRequestStream();
-                //readBytes = stream.Read(buffer, 0, buffer.Length);
                 requestStream.Write(buffer, 0, buffer.Length);
-                //count += readBytes;
-                //}
-                //while (readBytes != 0);
             }
             catch (WebException ex)
             {
@@ -179,7 +136,6 @@ namespace chatcommon.Classes
             bool isComplete = false;
             FtpWebRequest req = (FtpWebRequest)WebRequest.Create(ftpUrl);
             req.UseBinary = true;
-            //req.UsePassive = true;
             req.KeepAlive = true;
             req.Method = WebRequestMethods.Ftp.DownloadFile;
             req.Credentials = new NetworkCredential(username, password);
@@ -193,7 +149,7 @@ namespace chatcommon.Classes
                 ftpStream = response.GetResponseStream();
 
                 long cl = response.ContentLength;
-                int bufferSize = 4096;  //Image file cannot be greater than 40 Kb
+                int bufferSize = 4096;  
                 int readCount = 0;
                 byte[] buffer = new byte[bufferSize];
 
@@ -226,7 +182,25 @@ namespace chatcommon.Classes
             return isComplete;
         }
 
+        public static Dictionary<T, P> concat<T, P>(Dictionary<T, P> dictTarget, Dictionary<T, P> dictSource)
+        {
+            foreach (var dict in dictSource)
+            {
+                dictTarget.Add(dict.Key, dict.Value);
+            }
 
+            return dictTarget;
+        }
+
+        public static List<T> concat<T>(List<T> Target, List<T> Source)
+        {
+            foreach (var value in Source)
+            {
+                Target.Add(value);
+            }
+
+            return Target;
+        }
 
     }
 }

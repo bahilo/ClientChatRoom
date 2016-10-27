@@ -53,6 +53,13 @@
                 </Button.CommandParameter>
                 SIGN UP
             </Button>
+            <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                <Button.CommandParameter>
+                    <system:Int32>3</system:Int32>
+                </Button.CommandParameter>
+                EXIT
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

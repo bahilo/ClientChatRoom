@@ -2,6 +2,7 @@
 using chatbusiness.Core;
 using chatcommon.Classes;
 using chatcommon.Entities;
+using chatcommon.Interfaces;
 using chatgateway;
 using chatgateway.Core;
 using System;
@@ -15,7 +16,7 @@ namespace chatroom.Classes
 {
     public class Startup
     {
-        public BusinessLogic BL { get; set; }
+        public IBusinessLogic BL { get; set; }
         public DataAccess Dal { get; set; }
 
         public Startup()

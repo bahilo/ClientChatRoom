@@ -22,6 +22,8 @@ namespace chatroom.Views
     /// </summary>
     public partial class ChatRoomView : UserControl, IChatRoom
     {
+        private const int maxMessage = 5;
+
         public ChatRoomView()
         {
             InitializeComponent();
@@ -52,6 +54,7 @@ namespace chatroom.Views
                 btnMessage.Style = (Style)FindResource("Reply");
                 btnMessage.Content = txtBlock;
                 chatRoomZone.Children.Add(btnMessage);
+                displayMaxOfMessage();
             }));
         }
 
@@ -83,7 +86,19 @@ namespace chatroom.Views
                 btnMessage.Style = (Style)FindResource("RecipientReply");
                 btnMessage.Content = txtBlock;
                 chatRoomZone.Children.Add(btnMessage);
+                displayMaxOfMessage();
             }));
+        }
+
+        private async void displayMaxOfMessage()
+        {
+            if(chatRoomZone.Children.Count > maxMessage)
+            {                
+                await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    chatRoomZone.Children.RemoveRange(0, chatRoomZone.Children.Count - maxMessage);
+                }));
+            }
         }
     }
 }

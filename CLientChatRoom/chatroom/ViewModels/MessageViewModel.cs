@@ -1,6 +1,7 @@
 ﻿using chatbusiness;
 using chatcommon.Classes;
 using chatcommon.Entities;
+using chatcommon.Interfaces;
 using chatroom.Classes;
 using chatroom.Intefaces;
 using chatroom.Models;
@@ -36,7 +37,7 @@ namespace chatroom.ViewModels
             get { return BL.BLSecurity.GetAuthenticatedUser(); }
         }
 
-        public BusinessLogic BL
+        public IBusinessLogic BL
         {
             get { return _startup.BL; }
             set { _startup.BL = value; onPropertyChange("BL"); }
@@ -97,24 +98,16 @@ namespace chatroom.ViewModels
                     if (userList.Count > 0)
                     {
                         if(discussionModel.UserList.Count == 1)
-                            MessageIndividualHistoryList = concat(MessageIndividualHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
+                            MessageIndividualHistoryList = Utility.concat(MessageIndividualHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
                         else
-                            MessageGroupHistoryList = concat(MessageGroupHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
+                            MessageGroupHistoryList = Utility.concat(MessageGroupHistoryList, new Dictionary<UserModel, MessageModel> { { userList.Select(x => new UserModel { User = x }).First(), lastMessage } });
                     }                        
                 }  
             }
             Dialog.IsDialogOpen = false;         
         }
 
-        private Dictionary<UserModel, MessageModel> concat(Dictionary<UserModel, MessageModel> dictTarget, Dictionary<UserModel, MessageModel> dictSource)
-        {
-            foreach (var dict in dictSource)
-            {
-                dictTarget.Add(dict.Key, dict.Value);
-            }
-
-            return dictTarget;
-        }
+        
 
 
 

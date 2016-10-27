@@ -4,10 +4,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:class="clr-namespace:chatroom.Classes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:chatroom.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Loaded="ChatRoomHistoryWindow_Loaded">
+    <UserControl.Resources>
+        <class:DiscussionGroupNameConverter x:Key="discussionGroupConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -74,7 +78,7 @@
                                     Command="{Binding DataContext.DiscussionViewModel.GetDiscussionGroupCommand, ElementName=dgGroupHistory}" 
                                     CommandParameter="{Binding Value.TxtGroupName}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Key.TxtUserName}"/>
+                                    <TextBlock Text="{Binding Value.TxtGroupName, Converter={StaticResource ResourceKey=discussionGroupConverter}}"/>
                                     <TextBlock Margin="0 0 5 0" Text=":"/>
                                     <TextBlock Text="{Binding Value.TxtContent}"/>
                                 </StackPanel>

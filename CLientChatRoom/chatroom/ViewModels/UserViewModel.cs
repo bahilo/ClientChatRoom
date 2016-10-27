@@ -1,4 +1,5 @@
 ﻿using chatbusiness;
+using chatcommon.Interfaces;
 using chatroom.Classes;
 using chatroom.Intefaces;
 using chatroom.Models;
@@ -31,7 +32,7 @@ namespace chatroom.ViewModels
             _discussionViewModel = discussionViewModel;
         }
 
-        public BusinessLogic BL
+        public IBusinessLogic BL
         {
             get { return _startup.BL; }
             set { _startup.BL = value; onPropertyChange("BL"); }
@@ -51,11 +52,9 @@ namespace chatroom.ViewModels
 
         public async void load()
         {
-            Dialog.showSearch("Loading...");
             UserModelList = (await BL.BLUser.GetUserData(999)).Where(x=>x.ID != BL.BLSecurity.GetAuthenticatedUser().ID && x.Username != "channel").Select(x => new UserModel { User = x }).OrderBy(x=>x.User.Status).ToList();
             var discussionList = await _discussionViewModel.retrieveUserDiscussions(BL.BLSecurity.GetAuthenticatedUser());
             UserGroupList = discussionList.Where(x=>x.UserList.Count > 1).Select(x=>x.TxtGroupName).ToList();
-            Dialog.IsDialogOpen = false;
         }
 
 

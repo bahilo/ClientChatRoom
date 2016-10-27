@@ -25,6 +25,8 @@ namespace chatroom
         private Context _context;
         private Object _currentViewModel;
         private bool _isServerConnectionError;
+        private NotifyTaskCompletion<List<DiscussionModel>> _retrieveUserDiscussionTask_exitApp;
+        private NotifyTaskCompletion<List<DiscussionModel>> _retrieveUserDiscussionTask_logOut;
 
 
         //----------------------------[ ViewModels ]------------------
@@ -39,7 +41,8 @@ namespace chatroom
 
         public ButtonCommand<string> CommandNavig { get; set; }
         public ButtonCommand<string> LogOutCommand { get; set; }
-        
+        public ButtonCommand<object> ExitCommand { get; set; }
+
 
 
         public MainWindowViewModel()
@@ -53,17 +56,24 @@ namespace chatroom
 
         //----------------------------[ Initialization ]------------------
 
-            
+
         private void initializer()
         {
             _startup = new Startup();
             _context = new Context(navigation);
+
+            _retrieveUserDiscussionTask_exitApp = new NotifyTaskCompletion<List<DiscussionModel>>();
+            _retrieveUserDiscussionTask_logOut = new NotifyTaskCompletion<List<DiscussionModel>>();
+
             DiscussionViewModel = new DiscussionViewModel(navigation);
             UserViewModel = new UserViewModel(navigation, DiscussionViewModel);
             MessageViewModel = new MessageViewModel(navigation, DiscussionViewModel);
             SecurityLoginViewModel = new SecurityLoginViewModel(navigation);
+
             CommandNavig = new ButtonCommand<string>(appNavig, canAppNavig);
             LogOutCommand = new ButtonCommand<string>(logOut, canLogOut);
+            ExitCommand = new ButtonCommand<object>(exitApp, canExitApp);
+
             UserViewModel.Dialog = Dialog;
             DiscussionViewModel.Dialog = Dialog;
             MessageViewModel.Dialog = Dialog;
@@ -82,6 +92,9 @@ namespace chatroom
         {
             SecurityLoginViewModel.UserModel.PropertyChanged += onAuthenticatedAgentChange;
             DiscussionViewModel.PropertyChanged += onChatRoomChange;
+            DiscussionViewModel.PropertyChanged += onUpdateStatusChange;
+            _retrieveUserDiscussionTask_exitApp.PropertyChanged += onRetrieveUserDiscussionTaskCompletion_exitApp;
+            _retrieveUserDiscussionTask_logOut.PropertyChanged += onRetrieveUserDiscussionTaskCompletion_logOut;
         }
 
 
@@ -123,7 +136,7 @@ namespace chatroom
                 DiscussionViewModel.ClientSocket = _clientSocket;
                 DiscussionViewModel.ServerStream = _serverStream;
                 _serverStream = _clientSocket.GetStream();
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("0/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
+                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-2/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "|" + "$");//textBox3.Text
                 _serverStream.Write(outStream, 0, outStream.Length);
                 _serverStream.Flush();
 
@@ -131,7 +144,7 @@ namespace chatroom
                 User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
                 authenticatedUser.Status = 1;
                 var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
-                
+
                 // create discussion thread
                 Thread ctThread = new Thread(DiscussionViewModel.getMessage);
                 ctThread.SetApartmentState(ApartmentState.STA);
@@ -163,29 +176,41 @@ namespace chatroom
         {
             if (_clientSocket != null && _clientSocket.Connected)
             {
-                signOutFromServer();
+                
                 _clientSocket.GetStream().Close();
                 _clientSocket.Close();
                 _serverStream.Close();
-            }
+            }            
+        }
 
+        private void unSubscribeEvents()
+        {
             // unsubscribe events
             SecurityLoginViewModel.UserModel.PropertyChanged -= onAuthenticatedAgentChange;
             DiscussionViewModel.PropertyChanged -= onChatRoomChange;
+            DiscussionViewModel.PropertyChanged -= onUpdateStatusChange;
+            _retrieveUserDiscussionTask_exitApp.PropertyChanged -= onRetrieveUserDiscussionTaskCompletion_exitApp;
         }
 
-        private async void signOutFromServer()
+        private async void signOutFromServer(List<DiscussionModel> discussionList)
         {
-            if (_serverStream != null)
+            try
             {
-                byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-1/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + "$");//textBox3.Text
-                _serverStream.Write(outStream, 0, outStream.Length);
-                _serverStream.Flush();/**/
-
+                if (_serverStream != null && discussionList.Count > 0)
+                {
+                    List<UserModel> userList = new List<UserModel>();
+                    discussionList.Select(x => Utility.concat(userList, x.UserList)).First();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("-1/" + _startup.BL.BLSecurity.GetAuthenticatedUser().ID + "/0/" + DiscussionViewModel.generateDiscussionGroupName(discussionList[0].Discussion.ID, userList).Split('-')[1] + "$");//textBox3.Text
+                    _serverStream.Write(outStream, 0, outStream.Length);
+                    _serverStream.Flush();
+                }
+            }
+            finally
+            {
                 // update user status to disconnected
                 User authenticatedUser = _startup.BL.BLSecurity.GetAuthenticatedUser();
                 authenticatedUser.Status = 0;
-                var updatedUserList = await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
+                await _startup.BL.BLUser.UpdateUser(new List<User> { authenticatedUser });
             }
         }
 
@@ -197,6 +222,7 @@ namespace chatroom
             MessageViewModel.Dispose();
             SecurityLoginViewModel.Dispose();
             cleanUp();
+            unSubscribeEvents();
         }
 
         //----------------------------[ Event Handler ]------------------
@@ -210,7 +236,7 @@ namespace chatroom
                 {
                     onPropertyChange("TxtUserName");
                     connectToServer();
-                    UserViewModel.load();
+                    //UserViewModel.load();
                 }));
             }
         }
@@ -224,9 +250,39 @@ namespace chatroom
             }
         }
 
+        private async void onUpdateStatusChange(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("updateStatus"))
+            {
+                await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    UserViewModel.load();
+                }));
+            }
+        }
+
+        private void onRetrieveUserDiscussionTaskCompletion_exitApp(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSuccessfullyCompleted"))
+            {
+                signOutFromServer(_retrieveUserDiscussionTask_exitApp.Result);
+                Dispose();
+                Dialog.IsDialogOpen = false;
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void onRetrieveUserDiscussionTaskCompletion_logOut(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSuccessfullyCompleted"))
+            {
+                signOutFromServer(_retrieveUserDiscussionTask_logOut.Result);
+            }
+        }
+
 
         //----------------------------[ Action Commands ]------------------
-        
+
 
         private void appNavig(string obj)
         {
@@ -251,10 +307,22 @@ namespace chatroom
 
         private void logOut(string obj)
         {
+            _retrieveUserDiscussionTask_logOut.initializeNewTask(DiscussionViewModel.retrieveUserDiscussions(_startup.BL.BLSecurity.GetAuthenticatedUser()));
             SecurityLoginViewModel.showView();
         }
 
         private bool canLogOut(string arg)
+        {
+            return true;
+        }
+
+        private void exitApp(object obj)
+        {
+            Dialog.showSearch("Closing...");
+            _retrieveUserDiscussionTask_exitApp.initializeNewTask(DiscussionViewModel.retrieveUserDiscussions(_startup.BL.BLSecurity.GetAuthenticatedUser()));
+         }
+
+        private bool canExitApp(object arg)
         {
             return true;
         }
