@@ -341,10 +341,10 @@ namespace chatroom.ViewModels
                         int.TryParse(userIdList[0], out recipientId);
                         
                         // update users status
-                        if(recipientId == AuthenticatedUser.ID)
-                            onPropertyChange("updateStatus");
-                        else
-                            if (discussionList.Where(x=>x.UserList.Where(y=>y.User.ID == recipientId).Count() > 0).Count() > 0)
+                        //if(recipientId == AuthenticatedUser.ID)
+                        //    onPropertyChange("updateStatus");
+                        //else
+                            //if (discussionList.Where(x=>x.UserList.Where(y=>y.User.ID == recipientId).Count() > 0).Count() > 0)
                                 onPropertyChange("updateStatus");
                     }
                         

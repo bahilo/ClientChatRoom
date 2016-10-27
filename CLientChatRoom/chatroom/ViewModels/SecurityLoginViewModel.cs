@@ -92,9 +92,10 @@ namespace chatroom.ViewModels
 
         internal void onPwdBoxVerificationPasswordChange_updateTxtClearPasswordVerification(object sender, RoutedEventArgs e)
         {
-            PasswordBox pwd = ((PasswordBox)sender);
+            PasswordBox pwd = ((PasswordBox)sender);            
             if (pwd.Password.Count() > 0)
             {
+                TxtErrorMessage = "";
                 TxtClearPasswordVerification = pwd.Password;
                 if (TxtClearPassword.Equals(TxtClearPasswordVerification))
                 {
@@ -111,13 +112,10 @@ namespace chatroom.ViewModels
         private void onSignUpTaskComplete_checkIfUserFound(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals("IsSuccessfullyCompleted"))
-            {
-                if (Dialog.Response == 1)
-                {
-                    Dialog.Response = 0;
+            {                
+                if (_signUpTaskCompletion.Result == 1)
                     signUp();
-                }
-                else if(Dialog.Response == 2)
+                else if(_signUpTaskCompletion.Result == 2)                    
                     showView();
             }
         }
@@ -125,12 +123,15 @@ namespace chatroom.ViewModels
         private void onDialogDisplayTaskComplete_authenticateUser(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName.Equals("IsSuccessfullyCompleted"))
-            {
+            {                
                 int result = _DialogtaskCompletion.Result;
                 if (!string.IsNullOrEmpty(TxtUserName) && !string.IsNullOrEmpty(TxtClearPassword) && result == 1)
                     _authenticateUsertaskCompletion.initializeNewTask(authenticateAgent(TxtUserName, TxtClearPassword));
                 else if (result == 2)
+                {
+                    TxtErrorMessage = "";
                     showSignUp();
+                }                    
                 else if (result == 3)
                     Application.Current.Shutdown();
                 else
@@ -163,6 +164,7 @@ namespace chatroom.ViewModels
 
         private async void signUp()
         {
+            TxtErrorMessage = "";
             var userFoundList = await Bl.BLUser.searchUser(new chatcommon.Entities.User { Username = UserModel.TxtUserName }, EOperator.AND);
             if (userFoundList.Count == 0 && !string.IsNullOrEmpty(TxtClearPassword) && TxtClearPasswordVerification.Equals(TxtClearPassword))
             {
@@ -184,7 +186,7 @@ namespace chatroom.ViewModels
 
         public async Task<object> authenticateAgent(string username, string password, bool isClearPassword = true)
         {
-            //Dialog.showSearch("Searching...");
+            TxtErrorMessage = "";
             var userFound = await Bl.BLSecurity.AuthenticateUser(username, password, isClearPassword);
             if (userFound != null && userFound.ID != 0)
             {
@@ -192,7 +194,6 @@ namespace chatroom.ViewModels
                 _page(new MessageViewModel());
                 TxtUserName = "";
                 TxtClearPassword = "";
-                TxtErrorMessage = "";
             }
             else
             {
