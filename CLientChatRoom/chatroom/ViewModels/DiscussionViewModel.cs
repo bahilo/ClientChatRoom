@@ -487,7 +487,7 @@ namespace chatroom.ViewModels
                 try
                 {
                     var savedMdessage = await BL.BLMessage.InsertMessage(new List<Message> { new Message { DiscussionId = DiscussionModel.Discussion.ID, Content = InputMessage, Date = DateTime.Now, UserId = AuthenticatedUser.ID } });
-                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(DiscussionModel.TxtID + "/" + AuthenticatedUser.ID + "/" + savedMdessage[0].ID + "/" + DiscussionModel.TxtGroupName.Split('-')[1]  + "/" + InputMessage + "$"); //DiscussionModel.TxtGroupName.Split(';')[1] 
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(DiscussionModel.TxtID + "/" + AuthenticatedUser.ID + "/" + savedMdessage[0].ID + "/" + generateDiscussionGroupName(DiscussionModel.Discussion.ID, DiscussionModel.UserList).Split('-')[1]  + "/" + InputMessage + "$"); //DiscussionModel.TxtGroupName.Split(';')[1] 
                     _serverStream.Write(outStream, 0, outStream.Length);
                     _serverStream.Flush();
                     InputMessage = "";
